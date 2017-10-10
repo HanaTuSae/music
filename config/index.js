@@ -29,7 +29,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
          '/api':{
-  target:'http://localhost:8080/api',
+  target:'https://hanatusae.github.io/api',
   changeOrigin:true,
   pathRewrite:{
     '^/api':''
