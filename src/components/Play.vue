@@ -255,8 +255,13 @@ export default {
 
      audioDom.addEventListener('error',function(){
       if(audioDom.error.code!=4){
-        audioDom.currentTime=_this.currentTimeNum;
+        var currentTime=_this.currentTimeNum;
         _this.changeMusic(_this.audio.index);
+        console.log(currentTime);
+        if('fastSeek' in audioDom){
+          audioDom.fastSeek(currentTime)
+        }
+        // audioDom.currentTime=currentTime;
       }
      })
 

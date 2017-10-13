@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 // import Footer from '@/components/Footer'
-import MusicList from '../components/MusicList.vue'
-import Recommend from '../components/Recommend.vue'
-import Read from '../components/Read.vue'
+// import MusicList from '../components/MusicList.vue'
+// import Recommend from '../components/Recommend.vue'
+// import Read from '../components/Read.vue'
 
 Vue.use(Router)
 
@@ -20,23 +20,26 @@ export default new Router({
     {
       path: '/',
       name: '/',
-      component: MusicList
+      component: resolve => require(['../components/MusicList.vue'], resolve)
     },
     {
       path: '/musiclist',
       name: 'MusicList',
-      component: MusicList
+      component: resolve => require(['../components/MusicList.vue'], resolve)
     },
 
     {
       path: '/recommend',
       name: 'Recommend',
-      component: Recommend
+      component: resolve => require(['../components/Recommend.vue'], resolve)
     },
     {
       path: '/read',
       name: 'Read',
-      component: Read
+      component: resolve => require(['../components/Read.vue'], resolve)
+    },
+    { path: '/',
+        redirect: resolve => require(['../components/MusicList.vue'], resolve)
     }
   ]
 })

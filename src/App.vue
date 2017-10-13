@@ -47,6 +47,13 @@ import Play from './components/Play.vue';
 export default {
   name: 'app',
   components: { MHeader,MMenu,MFooter,Play,Find},
+  // components:{
+  //   MHeader: resolve => require(['./components/Header.vue'], resolve),
+  //   MMenu:resolve => require(['./components/AsideMenu.vue'], resolve),
+  //   MFooter:resolve => require(['./components/Footer.vue'], resolve),
+  //   Play:resolve => require(['./components/Play.vue'], resolve),
+  //   Find:resolve => require(['./components/Find.vue'], resolve)
+  // },
   data(){
     return {
       isShowHeader:'isShowHeader'

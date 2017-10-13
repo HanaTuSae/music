@@ -3,7 +3,7 @@
   <div class="loading" v-show="isLoading"><mt-spinner :type="2" color="#515151" class="mt-spinner"></mt-spinner></div>
   <div class="musiclist-main" v-show="!isLoading">
   <div class="music-list" v-for="(music,index) in hotTopData" >
-    <img :src="music.album.picUrl" class="music-img" v-lazy="music.album.picUrl">
+    <img  class="music-img" v-lazy="music.album.picUrl">
     <span class="music-index">{{index+1}}</span>
     <span class="music-name" @click="changeMusic(index)">{{music.artists[0].name+' - '+music.name}}</span>
   </div>
@@ -34,6 +34,9 @@ export default {
     },
     isLoading(){
       return this.$store.state.isLoading;
+    },
+    audio(){
+      return this.$store.state.audio;
     }
   },
   mounted() {

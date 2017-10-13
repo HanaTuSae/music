@@ -1,7 +1,7 @@
 <template>
   <div class="musiclist">
   <div class="music-list" v-for="(music,index) in musicData" :class="{active:index===isActive}">
-  	<img :src="music.musicImgSrc" class="music-img" v-lazy="music.musicImgSrc">
+  	<img  class="music-img" v-lazy="music.musicImgSrc">
   	<span class="music-index">{{index+1}}</span>
   	<span class="music-name" id="musicName" @click="changeMusic(index)" @mousedown="isActive=index" @mouseup="isActive=null" @touchstart="isActive=index" @touchend="isActive=null" @touchmove="isActive=null">{{music.name}}</span>
     <span class="del" @click="del(index)"><i class="del-icon"></i></span>
@@ -60,6 +60,7 @@ methods:{
     var config={
         method: 'post',
             url: '/api/play-music',
+            headers: {'Content-Type': 'application/json'},
             data: {
             musicID:this.musicData[index].id
             }
@@ -89,29 +90,10 @@ methods:{
   // 删除歌曲
   del(index){
     if(this.audio.index===index){//如果删除的为当前播放歌曲，则播放下一首歌曲
-      this.next();
+      var newIndex=index==this.musicData.length-1?0:index;
+      this.changeMusic(newIndex);
     }
     this.$store.commit('delmusicData',index);
-  },
-  next(){
-    var index=this.audio.index==this.musicData.length-1?0:this.audio.index+1;
-    var _this=this;
-    var config={
-        method: 'post',
-        url: '/api/play-music',
-        data: {
-        musicID:this.musicData[index].id
-        }
-    }
-    this.$store.commit('newaudio',{index:index,src:''});
-    this.axios(config).then(function(response){
-      if(_this.audio.index===index){
-        var src=response.data.data[0].url;
-        _this.$store.commit('newaudio',{index:index,src:src});
-      }
-      }).catch(function(response){
-        console.log(response)
-      });
   }
 }
 }

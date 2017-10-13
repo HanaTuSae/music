@@ -24,7 +24,6 @@ var proxyTable = config.dev.proxyTable
 
 var app = express()
 
-
 var apiRoutes = express.Router();
 var bodyParser = require('body-parser');
 var http = require('http');
@@ -132,26 +131,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 //搜索音乐
 apiRoutes.post('/find-music',function(req,res){
-  // var musicName=req.body.musicName;
-  // var musicUrl ="http://music.163.com/api/search/get/";
-  // var musicConfig={
-  //           method: 'post',
-  //           url: musicUrl,
-  //           form: {
-  //           s: musicName,
-  //           limit:20,
-  //           type:1,
-  //           offset:0
-  //           },
-  //           headers:{'Content-Type': 'application/json','Referer': 'http://music.163.com',
-  //     'Cookie': 'appver=1.5.6'},
-  // };
-  // request(musicConfig,function(err,response,body){
-  //   res.json({
-  //   errno:0,
-  //   musicData:JSON.parse(body).result
-  // });
-  // });
   var keywords = req.body.musicName || '';
   var type = req.body.type || 1;
   var offset = req.body.offset || '0';
@@ -174,12 +153,6 @@ apiRoutes.post('/play-music',function(req,res){
   var data={"ids":[musicID],"br":br,"csrf_token":""};
   var cookie = req.get('Cookie') ? req.get('Cookie') : (req.body.cookie ? req.body.cookie : '');
   createWebAPIRequest('/weapi/song/enhance/player/url', data, cookie, res);
-  // request.get(musicUrl,function(err,response,body){
-  //   res.json({
-  //     errno:0,
-  //     musicData:JSON.parse(body)
-  //   });
-  // });
 });
 
 //热歌榜
@@ -248,7 +221,7 @@ app.use(hotMiddleware)
 var staticPath = path.posix.join(config.dev.assetsPublicPath, config.dev.assetsSubDirectory)
 app.use(staticPath, express.static('./static'))
 
-var uri = 'https://localhost:' + port
+var uri = 'http://localhost:' + port
 
 var _resolve
 var readyPromise = new Promise(resolve => {

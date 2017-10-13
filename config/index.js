@@ -28,13 +28,14 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-         '/api':{
-  target:'http://localhost:8080/api',
-  changeOrigin:true,
-  pathRewrite:{
-    '^/api':''
-  }
-}
+        '/api': {
+            target: 'http://localhost:3000/api/',//不要写localhost
+            changeOrigin: true,//true允许跨域
+            pathRewrite: {
+                '^/api': ''  //需要rewrite重写的, 如果在服务器端做了处理则可以不要这段
+            }
+        }
+    }
     },
     // CSS Sourcemaps off by default because relative paths are "buggy"
     // with this option, according to the CSS-Loader README
@@ -43,4 +44,3 @@ module.exports = {
     // just be aware of this issue when enabling this option.
     cssSourceMap: false
   }
-}

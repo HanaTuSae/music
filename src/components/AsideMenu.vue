@@ -100,7 +100,7 @@ export default {
 	.asideMenu-top{
 		flex:1;
 		//background:url('../assets/icon/aside/background.jpg') no-repeat center center;background-size: cover;
-		@include iconStyle('../assets/icon/aside/background.jpg',cover);
+		@include iconStyle('/static/img/background.jpg',cover);
 		position:relative;
 		.logo img{
 			width:80px;

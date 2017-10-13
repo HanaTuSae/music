@@ -82,26 +82,26 @@ const store = new Vuex.Store({
 			if(localStorage.music!=='[]'&&localStorage.music){
 				context.state.musicData=JSON.parse(localStorage.music);
 			}else{
-			Vue.axios.get('/api/music-data').then(function(response) {
-        // 这里是处理正确的回调
-        context.state.musicData = response.data.musicData;
-        localStorage.music=JSON.stringify(context.state.musicData);
-    }).catch(function(response) {
-        // 这里是处理错误的回调
-        console.log(response)
-    });
-}
+				Vue.axios.get('/api/music-data').then(function(response) {
+        					// 这里是处理正确的回调
+        					context.state.musicData = response.data.musicData;
+        					localStorage.music=JSON.stringify(context.state.musicData);
+    				}).catch(function(response) {
+        					// 这里是处理错误的回调
+        					console.log(response)
+    				});
+			}
 		},
 		//获取热门歌曲列表
 		hotTopList(context){
 			Vue.axios.post('/api/hot-toplist').then(function(response) {
 				context.state.isLoading=false;
-                context.state.hotTopData = response.data.result.tracks;
-        // console.log(response.data.result.tracks);
-    }).catch(function(response) {
-    	context.state.isLoading=false;
-        console.log(response)
-    });
+                			context.state.hotTopData = response.data.result.tracks;
+        				// console.log(response.data.result.tracks);
+    			}).catch(function(response) {
+    				context.state.isLoading=false;
+        				console.log(response)
+    			});
 		},
 		//获取歌词
 		lyric(context,id){

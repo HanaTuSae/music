@@ -52,6 +52,9 @@ export default {
   	},
   	isLoading(){
   		return this.$store.state.isLoading;
+  	},
+  	audio(){
+  		return this.$store.state.audio;
   	}
   },
   mounted(){
