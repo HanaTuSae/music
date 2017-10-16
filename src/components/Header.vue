@@ -130,7 +130,7 @@ i{
     }
     .linkActive{
       width:100%;
-      height:100%;
+      height:40px;
       display:flex;
       justify-content:center;
       align-items:center;

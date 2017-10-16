@@ -1,9 +1,9 @@
 <template>
   <div class="musiclist">
-  <div class="music-list" v-for="(music,index) in musicData" :class="{active:index===isActive}">
+  <div class="music-list" v-for="(music,index) in musicData">
   	<img  class="music-img" v-lazy="music.musicImgSrc">
   	<span class="music-index">{{index+1}}</span>
-  	<span class="music-name" id="musicName" @click="changeMusic(index)" @mousedown="isActive=index" @mouseup="isActive=null" @touchstart="isActive=index" @touchend="isActive=null" @touchmove="isActive=null">{{music.name}}</span>
+  	<span class="music-name" @click="changeMusic(index)">{{music.name}}</span>
     <span class="del" @click="del(index)"><i class="del-icon"></i></span>
   </div>
   </div>
@@ -14,8 +14,7 @@ export default {
   name: 'musiclist',
   data () {
     return {
-      continueClick:null,
-      isActive:''
+      continueClick:null
     }
   },
   created(){
@@ -40,19 +39,19 @@ export default {
     }
   },
   mounted() {
-    var musicName=document.getElementById('musicName');
-    musicName.addEventListener('touchstart',function(ev){
-      var e=ev||window.event;
-      // e.preventDefault();
-    },{passive:true})
-    musicName.addEventListener('touchmove',function(ev){
-      var e=ev||window.event;
-      // e.preventDefault();
-    },{passive:true})
-    musicName.addEventListener('touchend',function(ev){
-      // var e=ev||window.event;
-      // e.preventDefault();
-    })
+    // var musicName=document.getElementById('musicName');
+    // musicName.addEventListener('touchstart',function(ev){
+    //   var e=ev||window.event;
+    //   e.preventDefault();
+    // },{passive:true})
+    // musicName.addEventListener('touchmove',function(ev){
+    //   var e=ev||window.event;
+    //   e.preventDefault();
+    // },{passive:true})
+    // musicName.addEventListener('touchend',function(ev){
+    //   // var e=ev||window.event;
+    //   // e.preventDefault();
+    // })
 },
 methods:{
 	changeMusic(index){
@@ -103,7 +102,7 @@ methods:{
 .musiclist{
 	flex:8;
 	overflow: auto;
-  .music-list.active{
+  .music-list:active{
     background-color: #e6e6e6;
   }
 	.music-list{

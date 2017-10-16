@@ -18,7 +18,7 @@
 
 <!-- 歌曲列表 -->
 
-<transition name="isShowMusicList" enter-active-class="animated fadeInUp" leave-active-class="animated fadeOutDown" :duration="500">
+<transition name="isShowMusicList">
 <div class="music-list" v-show="isShowMusicList">
 <div class="maskLayer" @click="closeMusicList"></div>
 <div class="musicList-main" ref="musicListMain">
@@ -41,7 +41,7 @@
       <span><i class="volume-cion"></i></span>
       <!-- <input type="range" name="" min="0" max="100" value="100" @click="changeVolume" id="volume"> -->
       <!-- 使用mint-ui的range组件控制音量 -->
-      <mt-range v-model="rangeValue" class="mt-range"></mt-range>
+      <mt-range v-model="rangeValue" class="mtrange"></mt-range>
     </div>
     <div class="lyricMain" @click="closeLyric">
       <div class="loading" v-show="isLoadingLyric"><mt-spinner :type="2" color="white" class="mt-spinner"></mt-spinner></div>
@@ -106,7 +106,6 @@ export default {
         transform:  'translate3d(0,0,0) scale(1)',
         height:0+'px'
       },
-      orderFlag:1,
       orderIcon:{
         backgroundImage:'url('+require('../assets/icon/list-loop.svg')+')'
       },
@@ -139,6 +138,9 @@ export default {
     },
     lyricData(){
       return this.$store.state.lyricData;
+    },
+    orderFlag(){
+      return this.$store.state.orderFlag;
     }
   },
   watch:{
@@ -154,12 +156,14 @@ export default {
       handler(val,oldval){
         if(val==''){
           this.currentLyric= [{'txt': '暂无歌词'}];
+        }else if(val=='error'){
+          this.currentLyric= [{'txt': '加载失败'}];
         }else{
           this.getLyric();
           this.filterLyric();
           this.styleUl.height=this.currentLyric.length*45+'px';
         }
-        // 初始化歌词高度
+        // 初始化歌词内容
         this.lrcHeight=0;
         this.styleUl.transform='translate3d(0,0,0) scale(1)';
         this.currentLyricIndex=-1;
@@ -536,19 +540,26 @@ export default {
 
     // 播放顺序
     order(){
-      if(this.orderFlag==1){
-        this.orderFlag+=1;
-        this.$toast('单曲循环');
-        this.orderIcon.backgroundImage='url('+require('../assets/icon/single-loop.svg')+')';
-      }else if(this.orderFlag==2){
-        this.orderFlag+=1;
-        this.$toast('随机播放');
-        this.orderIcon.backgroundImage='url('+require('../assets/icon/list-random.svg')+')';
-      }else if(this.orderFlag==3){
-        this.orderFlag=1;
-        this.$toast('循环播放');
-        this.orderIcon.backgroundImage='url('+require('../assets/icon/list-loop.svg')+')';
+      switch(this.orderFlag){
+        case 1:
+          this.audio.audioDom.loop=true;
+          this.getOrder(2,'单曲循环',require('../assets/icon/single-loop.svg'));
+          break;
+        case 2:
+          this.audio.audioDom.loop=false;
+          this.getOrder(3,'随机播放',require('../assets/icon/list-random.svg'));
+          break;
+        case 3:
+          this.getOrder(1,'循环播放',require('../assets/icon/list-loop.svg'));
+          break;
       }
+    },
+
+    // 修改播放顺序的图标、提示信息等
+    getOrder(flag,msg,url){
+        this.$store.commit('getOrderFlag',flag);
+        this.$toast(msg);
+        this.orderIcon.backgroundImage='url('+url+')';
     }
   }
 }
@@ -564,8 +575,8 @@ export default {
   width:100%;
   height:100%;
   display:flex;
-  overflow: hidden;
-  z-index:300;
+  // overflow: hidden;
+  // z-index:300;
   flex-direction:column;
   // background-color:#e6e6e6;
   .volume {
@@ -584,13 +595,15 @@ export default {
         @include iconStyle('../assets/icon/volume.svg',contain);
       }
     }
-    .mt-range{
+    .mtrange{
       flex:1;
       margin-right:10%;
     }
   }
   .lyricMain{
     flex:1;
+    // width:100%;
+    height:100%;
     display:flex;
      margin: 15px 0 85px 0;
     overflow: hidden;
@@ -611,7 +624,7 @@ export default {
     display:flex;
     // margin: 20px 0 50px 0;
     overflow: hidden;
-    z-index:300;
+    // z-index:300;
     position:relative;
     ul,li{
       list-style-type: none;
@@ -620,11 +633,12 @@ export default {
       // flex:1;
       display:flex;
       flex-direction:column;
-      transition: transform .8s ;
+      transition: transform .8s;
       position: absolute;
       top:40%;
       left:0;
       width:100%;
+      // z-index:300;
       // height:100%;
       li{
         width:90%;
@@ -652,8 +666,8 @@ export default {
   z-index: 400;
   // opacity: 0.8;
   // filter: alpha(opacity=80);
-  background:#666;
-  filter: opacity(0.5) brightness(55%);
+  background:rgba(0,0,0,0.3);
+  // filter: opacity(0.5) brightness(55%);
   position:relative;
   top:0;
   left:0;
@@ -733,6 +747,7 @@ export default {
     position:absolute;
     top:0;
     left:0;
+    z-index:400;
   }
   .musicList-main{
     width:100%;
@@ -772,9 +787,23 @@ export default {
       color:#8B2500;
     }
   }
+
+  // 歌曲列表动画
+  .isShowMusicList-enter-active {
+      transition: all .5s linear;
+    }
+.isShowMusicList-leave-active {
+      transition: all .5s linear;
+    }
+.isShowMusicList-enter,.isShowMusicList-leave-active{
+      transform: translateY(100%);
+      opacity: 0;
+    }
+
 // 背景
   .context{
     flex:1;
+    height:100%;
     position: relative;
     top:0;
     left:0;
@@ -796,6 +825,7 @@ export default {
     left:0;
     top:0;
     z-index: 99;
+    transition:all .3s ease-in;
   }
     .img img{
       width:250px;
@@ -876,7 +906,10 @@ export default {
       align-items:center;
       justify-content:center;
       .prev-icon{
-        @include iconStyle('../assets/icon/prev.svg',contain);
+        width:35px;
+        height:35px;
+        transform:scaleX(-1);//水平翻转
+        @include iconStyle('../assets/icon/next.svg',contain);
       }
     }
     .start{
@@ -895,6 +928,8 @@ export default {
       align-items:center;
       justify-content:center;
       .next-icon{
+        width:35px;
+        height:35px;
         @include iconStyle('../assets/icon/next.svg',contain);
       }
     }
@@ -903,6 +938,7 @@ export default {
       display:flex;
       align-items:center;
       justify-content:center;
+      transition:all .3s ease-in;
       .musiclist-icon{
         @include iconStyle('../assets/icon/musicMenu.png',contain);
       }

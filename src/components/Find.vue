@@ -92,7 +92,7 @@ export default {
     	if(this.musicName){
     	  this.$store.commit('isLoading',true);
 
-    	  // 将数据初始化
+    	  // 下拉数据初始化
     	  this.bottomText="上拉加载更多";
     	  this.pageNo=1;
     	  this.isLoadmore=true;
@@ -269,7 +269,7 @@ export default {
 				color:white;
 			}
 			input::placeholder{
-				color:white;
+				color:#999;
 			}
 		}
 	}
@@ -325,7 +325,7 @@ export default {
             }
 		}
 		.music-list:active{
-			background-color: #999;
+			background-color: #cdcdcd;
 		}
 	}
 }

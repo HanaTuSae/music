@@ -3,8 +3,8 @@
   <transition name="isshow">
   <div class="show" v-show="isShow">
     <!-- 左侧栏 -->
-    <!-- <transition name="isShowAsideMenu"> -->
-      <transition name="isShowAsideMenu" :duration="500" enter-active-class="animated fadeInLeft" leave-active-class="animated fadeOutLeft">
+    <transition name="isShowAsideMenu">
+<!--       <transition name="isShowAsideMenu" :duration="500" enter-active-class="animated fadeInLeft" leave-active-class="animated fadeOutLeft"> -->
     <MMenu v-show="isShowAsideMenu"></MMenu>
     </transition>
 
@@ -79,11 +79,14 @@ export default {
     },
     musicData(){
       return this.$store.state.musicData;
+    },
+    orderFlag(){
+      return this.$store.state.orderFlag;
     }
   },
   mounted: function() {
-    var hasVideo = !!(document.createElement('video').canPlayType);
-    if(!hasVideo){
+    // var hasAudio = !!(document.createElement('audio').canPlayType);
+    if(!this.$refs.audio){
       this.$toast('不支持audio');
     }
     this.$store.commit('audioDom',{name:'audioDom',audioDom:this.$refs.audio});
@@ -94,7 +97,12 @@ export default {
 },
 methods:{
   next(){
-    var index=this.audio.index==this.musicData.length-1?0:this.audio.index+1;
+    var index='';
+    switch(this.orderFlag){
+      case 1:index=this.audio.index==this.musicData.length-1?0:this.audio.index+1;break;
+      case 2:return;break;
+      case 3:index=this.getRandomNum(0,this.musicData.length-1);break;
+    }
     var _this=this;
     var config={
         method: 'post',
@@ -112,6 +120,11 @@ methods:{
       }).catch(function(response){
         console.log(response)
       });
+  },
+
+  // 在min和max之间生成一个整数
+  getRandomNum(min,max){
+    return Math.floor(Math.random()*(max-min+1)+min);
   }
 }
 }
@@ -135,14 +148,15 @@ i,a,button,span,li{
 #app,.show{
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   color: #2c3e50;
-  display: flex;
   flex-direction:column;
-  width:100%;height:100%;
+  width:100%;
+  height:100%;
 }
 #app{
   position: relative;
 }
 .show{
+  display: flex;
   position: absolute;
   top:0;
   left: 0;
@@ -152,7 +166,7 @@ i,a,button,span,li{
 }
 // 主页动画
 .isshow-leave-active {
-      transition: all .0s ease-out;
+      transition: all .0s linear;
     }
 .isshow-leave-active {
       transform: translateY(-100%);
@@ -161,10 +175,10 @@ i,a,button,span,li{
 
 // 播放界面动画
 .show-enter-active {
-      transition: all .5s ease-out;
+      transition: all .5s linear;
     }
 .show-leave-active {
-      transition: all .5s ease;
+      transition: all .5s linear;
     }
 .show-enter, .show-leave-active {
       transform: translateY(100%);
@@ -173,7 +187,7 @@ i,a,button,span,li{
 
 // 头部动画
 .isShowHeader-enter-active{
-  transition: all .5s ease-out;
+  transition: all .5s linear;
 }
 .isShowHeader-enter {
       transform: translateX(-100%);
@@ -181,26 +195,26 @@ i,a,button,span,li{
     }
 // 搜索动画
 .isShowFind-enter-active {
-      transition: all .5s ease-out;
+      transition: all .5s linear;
     }
 .isShowFind-leave-active {
-      transition: all .0s ease;
+      transition: all .0s linear;
     }
 .isShowFind-enter,.isShowFind-leave-active{
       transform: translateX(100%);
       opacity: 0;
     }
 //侧栏动画
-// .isShowAsideMenu-enter-active {
-//       transition: all .5s ease-out;
-//     }
-// .isShowAsideMenu-leave-active {
-//       transition: all .5s ease;
-//     }
-// .isShowAsideMenu-enter,.isShowAsideMenu-leave-active{
-//       transform: translateX(-100%);
-//       opacity: 0;
-//     }
+.isShowAsideMenu-enter-active {
+      transition: all .5s linear;
+    }
+.isShowAsideMenu-leave-active {
+      transition: all .5s linear;
+    }
+.isShowAsideMenu-enter,.isShowAsideMenu-leave-active{
+      transform: translateX(-100%);
+      opacity: 0;
+    }
 @media screen and (min-width: 768px){
 html,body{
    width:460px;
