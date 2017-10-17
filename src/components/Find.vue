@@ -3,10 +3,22 @@
    	<div class="findNav">
    		<div class="back"><i class="back-icon" @click="isShowFind"></i></div>
    		<div class="findContent">
-   		<input type="text" name="findMusic" placeholder="歌名/歌手" ref="findMusic" @keyup.enter="submit" v-model="musicName">
-   		<div class="close"><i class="close-icon"></i></div>
+   		     <input type="text" name="findMusic" placeholder="歌名/歌手" ref="findMusic" @keyup.enter="find()" v-model="musicName" maxlength="30">
+   		     <div class="close"><i class="close-icon"></i></div>
    		</div>
    	</div>
+   	<!-- 搜索建议 -->
+   	<div class="musicSuggest" v-show="isShowSuggest">
+   		<div class="musicSuggestList" @click="find()">
+   			<span class="suggestDefault">搜索 </span>
+   			<span class="suggestName">"{{musicName}}"</span>
+   		</div>
+   	    	<div class="musicSuggestList" v-for="(suggest,index) in musicSuggestData">
+   	    	      <span class="suggest-icon"></span>
+   	    	      <span class="suggestName" @click="find(suggest.name)">{{suggest.name}}</span>
+   	         </div>
+   	</div>
+
    	<div class="loading" v-show="isLoading"><mt-spinner :type="2" color="#515151" class="mt-spinner"></mt-spinner></div>
    	<div class="musicList" v-show="!isLoading">
    	<mt-loadmore :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" ref="loadmore" @bottom-status-change="handleBottomChange" :auto-fill="false">
@@ -18,9 +30,9 @@
   	        </div>
    		</div>
    		<div slot="bottom" class="mint-loadmore-bottom" v-show="isLoadmore">
-            <span v-show="bottomStatus !== 'loading'" :class="{ 'rotate': bottomStatus === 'pull' }">{{bottomText}}</span>
-            <span v-show="bottomStatus === 'loading'" class="loadmore"><mt-spinner :type="3" color="#515151" ></mt-spinner></span>
-        </div>
+            	    <span v-show="bottomStatus !== 'loading'" :class="{ 'rotate': bottomStatus === 'pull' }">{{bottomText}}</span>
+            	    <span v-show="bottomStatus === 'loading'" class="loadmore"><mt-spinner :type="3" color="#515151" ></mt-spinner></span>
+        		</div>
    		</mt-loadmore>
    	</div>
    </div>
@@ -31,15 +43,18 @@ export default {
   name: 'find',
   data () {
     return {
-      musicName:'',
-      musicFindData:[],
+      musicName:'',//搜索值
+      musicFindData:[],//存储搜索列表
+      musicSuggestData:[],//存储搜索建议列表
       bottomText:"上拉加载更多",
       pageNo:1,//页数
       totalCount:'',//总页数
-      allLoaded:false,
-      bottomStatus:'',
-      isLoadmore:false,
-      continueClick:null//连续点击事件
+      allLoaded:false,//为true时加载更多不在执行
+      bottomStatus:'',//加载更多状态
+      isLoadmore:false,//加载更多
+      isShowSuggest:false,//显示搜索建议
+      continueClick:null,//连续点击事件
+      isSearch:false
     }
   },
   created(){
@@ -66,6 +81,18 @@ export default {
         localStorage.music = JSON.stringify(val);
       },
       deep:true
+    },
+    musicName:{
+    	handler(val,oldval){
+    		if(val&&this.isSearch==false){
+    			this.isShowSuggest=true;
+    			this.searchSuggest();
+    		}else {
+    			this.musicSuggestData='';
+    			this.isShowSuggest=false;
+    		}
+    	},
+    	deep:true
     }
   },
   methods:{
@@ -78,18 +105,27 @@ export default {
     },
 
     //搜索音乐
-    submit(){
+    find(suggestName){
+    	this.musicName=suggestName||this.musicName;
+    	var activeMusicName=this.musicName;
     	var config={
     		method: 'post',
             	url: '/api/find-music',
             	headers:{'Content-Type': 'application/json'},
             	data: {
-           	 musicName:this.musicName
+           	 musicName:activeMusicName
            	 }
         }
-        var activeMusicName=this.musicName;
         var _this=this;
-    	if(this.musicName){
+        // this.cancelSearch('/api/find-music');
+    	if(activeMusicName){
+
+    	   //初始化搜索建议
+    	  this.musicSuggestData='';
+    	  this.isShowSuggest=false;
+    	  this.isSearch=true;
+
+    	  //加载loading
     	  this.$store.commit('isLoading',true);
 
     	  // 下拉数据初始化
@@ -104,12 +140,59 @@ export default {
   	   		_this.$store.commit('isLoading',false);
   		  	_this.musicFindData=response.data.result.songs;
   		  	_this.totalCount=Math.ceil(response.data.result.songCount/20);//返回数据以每页20个分页得出总页数
+  		  	_this.isSearch=false;
   	   	}
   	      }).catch(function(response) {
               		_this.$store.commit('isLoading',false);
+              		_this.isSearch=false;
               		console.log(response);
          	 	});
         }
+    },
+
+    // 搜索建议
+    searchSuggest(){
+    	// 取消请求
+    	// this.cancelSearch('/api/find-music-suggest');
+
+    	var config={
+    		method: 'get',
+            	url: '/api/find-music-suggest',
+            	headers:{'Content-Type': 'application/json'},
+            	params: {
+           	 musicName:this.musicName
+           	 }
+        }
+        var currentName=this.musicName;
+        var _this=this;
+        if(this.musicName){
+        	this.axios(config).then(function(response){
+        		if(currentName==_this.musicName){
+        			_this.musicSuggestData=response.data.result.songs;
+        		}
+        		
+        		// console.log(response.data.result.songs);
+        	}).catch(function(error){
+        		console.log(error);
+        	})
+        }
+    },
+
+    //取消请求
+    cancelSearch(url){
+    	var CancelToken = this.axios.CancelToken;
+	var source = CancelToken.source();
+	var _this=this;
+    	this.axios.post(url,{
+    		cancelToken: source.token
+    	}).catch(function(error){
+    		if(_this.axios.isCancel(error)){
+    			console.log('Request canceled', error.data.cancelToken.reason.message);
+    		}else{
+    			console.log(error);
+    		}
+    	})
+    	source.cancel('Operation canceled by the user.');
     },
 
     //点击音乐播放
@@ -245,6 +328,7 @@ export default {
 			flex:1;
 			display:flex;
 			align-items:center;
+			margin-left: 10px;
 			.back-icon{
 				background: url('../assets/icon/back.svg') no-repeat center center;background-size: contain;
 			}
@@ -256,9 +340,9 @@ export default {
 			}
 		}
 		.findContent{
-			flex:4;
+			flex:7;
 			input{
-				width:100%;
+				width:95%;
 				height:30px;
 				font-size: 18px;
 				border: none;
@@ -269,7 +353,49 @@ export default {
 				color:white;
 			}
 			input::placeholder{
-				color:#999;
+				color:rgba(255,255,255,0.5);
+			}
+		}
+		.close{
+		}
+	}
+	.musicSuggest{
+		width:92%;
+		position: absolute;
+		top:45px;
+		right:3.5%;
+		box-shadow: 0 5px 20px gray;
+		background-color:#e6e6e6;
+		z-index:5;
+		.musicSuggestList{
+			width:95%;
+			height:40px;
+			line-height:40px;
+			padding-left: 10px;
+			font-size:18px;
+			border-bottom: 1px solid rgba(0,0,0,0.1);
+			display:flex;
+			align-items:center;
+			overflow: hidden;
+			.suggest-icon{
+				width:25px;
+				height:25px;
+				background: url('../assets/icon/search.svg') no-repeat center center;background-size: contain;
+			}
+			.suggestName{
+				margin-left:10px;
+				flex:1;
+				white-space:nowrap;
+      				overflow:hidden;
+      				text-overflow:ellipsis;//文字超出部分省略号显示
+				// overflow: hidden;
+			}
+			.suggestDefault{
+				// width:60px;
+				// height:40px;
+			}
+			span{
+				display:inline-block;
 			}
 		}
 	}

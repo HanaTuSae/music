@@ -760,22 +760,28 @@ export default {
     overflow-y: auto;
     background-color:#e6e6e6;
     tr{
-      height:30px;
+      width:100%;
+      height:40px;
+      display:flex;
+      align-items:center;
     }
     tr:active{
       background-color: #cdcdcd;
     }
     span{
-      line-height: 30px;
+      // height: 30px;
+      line-height: 40px;
       display:inline-block;
     }
     .music-index{
-      width:10%;
+      flex:1;
+      // width:10%;
       text-align: center;
-      vertical-align: top;
     }
     .music-name{
-      width: 75%;
+      flex:7.5;
+      // width: 75%;
+      margin-right: 10px;
       cursor: pointer;
       white-space:nowrap;
       overflow:hidden;

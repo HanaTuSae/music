@@ -145,7 +145,18 @@ apiRoutes.post('/find-music',function(req,res){
   createWebAPIRequest('/weapi/cloudsearch/get/web', data, cookie, res);
 });
 
-// 搜索歌曲播放直链
+//搜索建议
+apiRoutes.get('/find-music-suggest',function(req,res){
+  var cookie = req.get('Cookie') ? req.get('Cookie') : (req.body.cookie ? req.body.cookie : '');
+  var data={
+    'csrf_token': '',
+    's': req.query.musicName || '',
+    // 'limit':10
+  };
+  createWebAPIRequest('/weapi/search/suggest/web', data, cookie, res,'POST');
+})
+
+// 搜索歌曲url
 apiRoutes.post('/play-music',function(req,res){
   var musicID=req.body.musicID;
   //var musicUrl="http://music.163.com/api/song/detail/?id="+musicID+"&ids=%5B"+musicID+"%5D";
@@ -173,7 +184,6 @@ apiRoutes.get('/lyric',function(req,res){
   });
 })
 
-//搜索热门
 
 
 app.use('/api', apiRoutes);

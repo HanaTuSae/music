@@ -2,7 +2,7 @@
   <div class="footer">
   <div class="audio">
     <img :src="audio.imgsrc" class="imgsrc" @click="isShow">
-    <span class="audioName">{{audio.name}}</span>
+    <span class="audioName" @click="isShow">{{audio.name}}</span>
     <span @click="play()" class="play" :class="playImgSrc"></span>
   </div>
     <!-- <audio v-bind:src="audio.src" ref="audio" controls="controls" :autoplay="playing" hidden="hidden"></audio> -->
