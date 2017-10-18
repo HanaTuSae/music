@@ -1,25 +1,27 @@
 <template>
   <div id="app">
-  <transition name="isshow">
-  <div class="show" v-show="isShow">
-    <!-- 左侧栏 -->
-    <transition name="isShowAsideMenu">
-<!--       <transition name="isShowAsideMenu" :duration="500" enter-active-class="animated fadeInLeft" leave-active-class="animated fadeOutLeft"> -->
-    <MMenu v-show="isShowAsideMenu"></MMenu>
+    <transition name="isShowMaskLayer">
+      <div class="maskLayer" @click="close" v-show="isShowMaskLayer"></div>
     </transition>
+    <transition name="isshow">
+      <div class="show" v-show="isShow">
+    <!-- 左侧栏 -->
+        <transition name="isShowAsideMenu" out-in>
+          <MMenu v-show="isShowAsideMenu"></MMenu>
+        </transition>
 
     <!-- 头部 -->
-    <transition :name="isShowHeader">
+    <transition :name="isShowHeader" out-in>
     <MHeader v-show="!isShowFind"></MHeader>
     </transition>
 
     <!-- 路由页面 -->
-    <transition :name="isShowHeader">
+    <transition :name="isShowHeader" out-in>
     <router-view v-show="!isShowFind"></router-view>
     </transition>
 
     <!-- 搜索 -->
-    <transition name="isShowFind">
+    <transition name="isShowFind" out-in>
     <Find v-show="isShowFind"></Find>
     </transition>
 
@@ -29,7 +31,7 @@
   </transition>
 
   <!-- 播放界面 -->
-  <transition name="show">
+  <transition name="show" out-in>
     <Play v-show="!isShow"></Play>
   </transition>
 
@@ -82,6 +84,12 @@ export default {
     },
     orderFlag(){
       return this.$store.state.orderFlag;
+    },
+    isShowMaskLayer(){
+      return this.$store.state.isShowMaskLayer;
+    },
+    isShowMusicList(){
+      return this.$store.state.isShowMusicList;
     }
   },
   mounted: function() {
@@ -125,6 +133,12 @@ methods:{
   // 在min和max之间生成一个整数
   getRandomNum(min,max){
     return Math.floor(Math.random()*(max-min+1)+min);
+  },
+
+  close(){
+    this.$store.commit('isShowMaskLayer',false);
+    this.$store.commit('isShowMusicList',false);
+    this.$store.commit('isShowAsideMenu',false);
   }
 }
 }
@@ -139,6 +153,7 @@ html,body{
   width:100%;
   height:100%;
   overflow: hidden;
+  user-select:none;//页面内容不能选中
 }
 i,a,button,span,li{
   outline: none;
@@ -163,6 +178,18 @@ i,a,button,span,li{
   .headerRouter{
     overflow:auto;
   }
+}
+.maskLayer{
+  width:100%;
+  height:100%;
+  z-index: 350;
+  // opacity: 0.8;
+  // filter: alpha(opacity=80);
+  background:rgba(0,0,0,0.3);
+  // filter: opacity(0.5) brightness(55%);
+  position:fixed;
+  top:0;
+  left:0;
 }
 // 主页动画
 .isshow-leave-active {
@@ -213,6 +240,16 @@ i,a,button,span,li{
     }
 .isShowAsideMenu-enter,.isShowAsideMenu-leave-active{
       transform: translateX(-100%);
+      opacity: 0;
+    }
+    // 遮罩层动画
+.isShowMaskLayer-enter-active {
+      transition: all .5s linear;
+    }
+.isShowMaskLayer-leave-active {
+      transition: all .5s linear;
+    }
+.isShowMaskLayer-enter,.isShowMaskLayer-leave-active{
       opacity: 0;
     }
 @media screen and (min-width: 768px){

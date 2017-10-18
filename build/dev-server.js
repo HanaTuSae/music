@@ -182,8 +182,28 @@ apiRoutes.get('/lyric',function(req,res){
     res.setHeader("Content-Type", "application/json");
     res.send(response);
   });
-})
+});
 
+// 搜索热门
+apiRoutes.get('/search-hot',function(req,res){
+  var hotKeywords=['张杰', '赵雷', '李健', '林志炫', '张碧晨',
+                                        '梁博', '周笔畅', '张靓颖', '陈奕迅', '周杰伦',
+                                         '王力宏', 'TFBoys', '李玉刚', '魏晨', '薛之谦',
+                                         '理想三旬','一生所爱','童话镇','Seve','春风十里',
+                                         'Panama','小半','你就不要想起我','谢春花','成都'
+                                      ];
+  var rHot = new Array(8);
+  for (let i = 0; i < rHot.length; i++) {
+    let length = hotKeywords.length;
+    let random = Math.floor(length * Math.random());
+    rHot[i] = hotKeywords[random];
+    hotKeywords.splice(random, 1);
+  }
+  res.json({
+    errno: 0,
+    searchHot: rHot
+  });
+})
 
 
 app.use('/api', apiRoutes);

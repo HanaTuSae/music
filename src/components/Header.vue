@@ -25,6 +25,9 @@ export default {
     },
     getRoutePath(){
       return this.$route.path;
+    },
+    isShowMaskLayer(){
+      return this.$store.state.isShowMaskLayer;
     }
     // isShowFind(){
     //   return this.$store.state.isShowFind;
@@ -39,7 +42,8 @@ export default {
   },
   methods:{
     showAsideMenu(){
-      this.isShowAsideMenu==true?this.$store.commit('isShowAsideMenu',false):this.$store.commit('isShowAsideMenu',true)
+      this.isShowAsideMenu==true?this.$store.commit('isShowAsideMenu',false):this.$store.commit('isShowAsideMenu',true);
+      this.$store.commit('isShowMaskLayer',true);
     },
     isShowFind(){
       this.$store.commit('isShowFind',true);

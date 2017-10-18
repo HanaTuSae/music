@@ -9,6 +9,7 @@
 <template>
   <div class="play" :style="{backgroundImage:'url('+audio.imgsrc+')'}">
     <div class="blur" ><img src="../assets/blur.jpg"></div>
+
   <!-- 头部 -->
   <div class="nav">
     <div class="back"><i class="back-icon" @click="isShow"></i></div>
@@ -17,24 +18,22 @@
   </div>
 
 <!-- 歌曲列表 -->
-
-<transition name="isShowMusicList">
-<div class="music-list" v-show="isShowMusicList">
-<div class="maskLayer" @click="closeMusicList"></div>
-<div class="musicList-main" ref="musicListMain">
-<tr v-for="(music,index) in musicData" >
-  <span class="music-index">{{index+1}}</span>
-  <span class="music-name" @click="changeMusic(index)" :class="{active:index==audio.index}">{{music.name}} </span>
-</tr>
-</div>
-</div>
+<transition name="isShowMusicList" out-in>
+     <div class="music-list" v-show="isShowMusicList">
+          <div class="musicList-main" ref="musicListMain">
+               <tr v-for="(music,index) in musicData" >
+                    <span class="music-index">{{index+1}}</span>
+                    <span class="music-name" @click="changeMusic(index)" :class="{active:index==audio.index}">{{music.name}} </span>
+              </tr>
+          </div>
+     </div>
 </transition>
 
   <!-- 图片 -->
   <div class="context">
 
     <!-- 歌词 -->
-    <transition name="isShowLyric" enter-active-class="animated fadeIn" leave-active-class="animated fadeOut" :duration="300">
+    <transition name="isShowLyric" enter-active-class="animated fadeIn" leave-active-class="animated fadeOut" :duration="300" out-in>
   <div class="lyric" v-show="isShowLyric" >
   <!-- 音量 控制-->
     <div class="volume">
@@ -95,7 +94,6 @@ export default {
     return {
       nowTime:'00:00',
       totalTime:'00:00',
-      isShowMusicList:false,
       continueClick:null,
       rangeValue:100,
       currentLyric:[],
@@ -141,6 +139,12 @@ export default {
     },
     orderFlag(){
       return this.$store.state.orderFlag;
+    },
+    isShowMaskLayer(){
+      return this.$store.state.isShowMaskLayer;
+    },
+    isShowMusicList(){
+      return this.$store.state.isShowMusicList;
     }
   },
   watch:{
@@ -154,27 +158,33 @@ export default {
     },
     lyricData:{
       handler(val,oldval){
-        if(val==''){
-          this.currentLyric= [{'txt': '暂无歌词'}];
-        }else if(val=='error'){
-          this.currentLyric= [{'txt': '加载失败'}];
-        }else{
-          this.getLyric();
-          this.filterLyric();
-          this.styleUl.height=this.currentLyric.length*45+'px';
-        }
         // 初始化歌词内容
+        this.currentLyric='';
         this.lrcHeight=0;
         this.styleUl.transform='translate3d(0,0,0) scale(1)';
         this.currentLyricIndex=-1;
+        this.styleUl.height=this.currentLyric.length*45+'px';
+
+        if(val=='empty'){
+          this.currentLyric= [{'txt': '暂无歌词'}];
+        }else if(val=='error'){
+          this.currentLyric= [{'txt': '加载失败'}];
+        }else if(val!=''){
+          this.getLyric();
+          this.filterLyric();
+        }
       },
       deep:true
     },
     audio:{
       handler(val,oldval){
         var nowBar=document.getElementById("nowBar");
+        var currentMusic={
+          index:val.index,
+          id:this.musicData[val.index].id
+        }
         if(val.src=='')
-        this.$store.dispatch('lyric',this.musicData[val.index].id);
+        this.$store.dispatch('lyric',currentMusic);
         this.nowTime="00:00";
         this.currentTimeNum=0;
         nowBar.style.width=0;
@@ -263,7 +273,8 @@ export default {
         _this.changeMusic(_this.audio.index);
         console.log(currentTime);
         if('fastSeek' in audioDom){
-          audioDom.fastSeek(currentTime)
+          audioDom.fastSeek(currentTime);
+          console.log(111);
         }
         // audioDom.currentTime=currentTime;
       }
@@ -303,9 +314,27 @@ export default {
     this.$store.commit('isShowLyric',false);
     },
 
-    //播放列表展示和关闭
+    //播放列表展示
     showMusicList(){
-      this.isShowMusicList=true;
+      // var _this=this;
+      // var isShowMaskLayer='';
+      // clearTimeout(isShowMaskLayer);
+      this.$store.commit('isShowMusicList',true);
+      // isShowMaskLayer=setTimeout(function(){
+        this.$store.commit('isShowMaskLayer',true);
+      // },500)
+    },
+
+    // 打开歌词界面
+    showLyric(){
+      this.$store.commit('isShowLyric',true);
+    },
+
+    // 关闭歌词界面
+    closeLyric(){
+      this.$store.commit('isShowLyric',false);
+    },
+    onLyricChange(nowPropress){
     },
 
     //上一首
@@ -443,26 +472,6 @@ export default {
       s=s<10?'0'+s:s;
       return m+":"+s;
     },
-    // 关闭播放列表
-    closeMusicList(){
-      var musicListMain=this.$refs.musicListMain;
-      var e=window.event;
-      if(musicListMain.contains(e.target)||musicListMain===e.target){}else{
-        this.isShowMusicList=false;
-        }
-    },
-
-    // 打开歌词界面
-    showLyric(){
-      this.$store.commit('isShowLyric',true);
-    },
-
-    // 关闭歌词界面
-    closeLyric(){
-      this.$store.commit('isShowLyric',false);
-    },
-    onLyricChange(nowPropress){
-    },
 
     //分享
     share(){
@@ -510,6 +519,7 @@ export default {
     getActiveIndex(index){
         // this.styleUl.marginTop=this.lrcHeight-index*40+'px';
         var activeLi=document.getElementById('lyricUl').getElementsByTagName('li');
+        var lyricContent=document.getElementById('lyricContent');
         // var activedLiHeight=0;
         // // if(parseInt(index)>0){
         //   for(var i=0;i<=index;i++){
@@ -519,6 +529,7 @@ export default {
         // }
         this.lrcHeight=index===0?0:this.lrcHeight-activeLi[index].clientHeight;
         this.styleUl.transform='translate3d(0,'+this.lrcHeight+'px,0) scale(1)';
+        // lyricContent.scrollTop=0-this.lrcHeight;
         // this.styleUl.marginTop=this.lrcHeight+'px';
 
     },
@@ -660,18 +671,6 @@ export default {
     }
   }
 }
-.maskLayer{
-  width:100%;
-  height:100%;
-  z-index: 400;
-  // opacity: 0.8;
-  // filter: alpha(opacity=80);
-  background:rgba(0,0,0,0.3);
-  // filter: opacity(0.5) brightness(55%);
-  position:relative;
-  top:0;
-  left:0;
-}
 
 .play{
   display:flex;
@@ -705,7 +704,6 @@ export default {
     // background-color: #515151;
     width:100%;
     height:40px;
-    align-items:center;
     z-index:99;
     border-bottom: 1px solid rgba(255,255,255,0.3);
     margin-bottom: 1px;
@@ -743,19 +741,19 @@ export default {
 // 歌曲列表
   .music-list{
     width:100%;
-    height:100%;
+    height:50%;
     position:absolute;
-    top:0;
+    top:50%;
     left:0;
     z-index:400;
   }
   .musicList-main{
     width:100%;
-    height:50%;
-    position: absolute;
-    left:0;
-    top:50%;
-    z-index: 400;
+    height:100%;
+    // position: absolute;
+    // left:0;
+    // top:50%;
+    // z-index: 400;
     overflow-x:hidden;
     overflow-y: auto;
     background-color:#e6e6e6;
@@ -831,16 +829,18 @@ export default {
     left:0;
     top:0;
     z-index: 99;
-    transition:all .3s ease-in;
+    display:flex;
+    align-items:center;
+    justify-content:center;
   }
     .img img{
-      width:250px;
-      height:250px;
-      position: absolute;
-      left:50%;
-      top:50%;
-      margin-left: -125px;
-      margin-top:-125px;
+      width:200px;
+      height:200px;
+      // position: absolute;
+      // left:50%;
+      // top:50%;
+      // margin-left: -125px;
+      // margin-top:-125px;
       border-radius: 100%;
       // transition: transform 1000ms;
       animation:transformImg 60s infinite linear;
@@ -963,8 +963,14 @@ export default {
 .stopImgSrc{
       @include iconStyle('../assets/icon/stop.svg',contain);
     }
-    @keyframes transformImg{
+@keyframes transformImg{
       0%{transform:rotate(0deg);}
       100%{transform:rotate(360deg);}
-    }
+}
+@media screen and (min-width: 768px){
+  .img img{
+    width:250px;
+    height:250px;
+  }
+}
 </style>

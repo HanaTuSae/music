@@ -12,10 +12,13 @@ const store = new Vuex.Store({
         		isLoading:false,
         		isShowLyric:false,
         		isLoadingLyric:false,
+        		isShowMaskLayer:false,
+        		isShowMusicList:false,
 		playing:false,
 		musicData:[],
 		hotTopData:[],
 		lyricData:[],
+		searchHot:[],
 		orderFlag:1,
 		audio:{
 			index:0,
@@ -67,18 +70,13 @@ const store = new Vuex.Store({
 		},
 		getOrderFlag(state,msg){
 			state.orderFlag=msg;
+		},
+		isShowMaskLayer(state,msg){
+			state.isShowMaskLayer=msg;
+		},
+		isShowMusicList(state,msg){
+			state.isShowMusicList=msg;
 		}
-		//获取歌词
-		// lyric(state,id){
-		// 	state.isLoading=true;
-		// 	Vue.axios.get('/api/lyric',{params:{musicID:id}}).then(function(response){
-		// 		state.isLoading=false;
-		// 		state.lyricData=response.data.lrc.lyric;
-		// 	}).catch(function(response){
-		// 		state.isLoading=false;
-		// 		console.log(response)
-		// 	});
-		// }
 	},
 	actions:{
 		//获取歌曲列表
@@ -105,23 +103,29 @@ const store = new Vuex.Store({
     			});
 		},
 		//获取歌词
-		lyric(context,id){
+		lyric(context,currentMusic){
 			context.state.isLoadingLyric=true;
-			context.state.lyricData=[];
-			setTimeout(()=>{
-			Vue.axios.get('/api/lyric',{params:{musicID:id}}).then(function(response){
-				context.state.isLoadingLyric=false;
+			// context.state.lyricData='';
+			Vue.axios.get('/api/lyric',{params:{musicID:currentMusic.id}}).then(function(response){
+				setTimeout(()=>{context.state.isLoadingLyric=false;},2000);
 				if(response.data.uncollected||response.data.nolyric){
-					context.state.lyricData='';
-				}else{
+					context.state.lyricData='empty';
+				}else if(currentMusic.index==context.state.audio.index){
 					context.state.lyricData=response.data.lrc.lyric;
 				}
 			}).catch(function(response){
-				context.state.isLoadingLyric=false;
+				setTimeout(()=>{context.state.isLoadingLyric=false;},2000);
 				context.state.lyricData='error';
 				console.log(response)
 			});
-			},2000);
+		},
+		// 获取热门搜索
+		searchHot(context){
+			Vue.axios.get('/api/search-hot').then(function(response){
+				context.state.searchHot=response.data.searchHot;
+			}).catch(function(error){
+				console.log(error);
+			})
 		}
 	}
 })

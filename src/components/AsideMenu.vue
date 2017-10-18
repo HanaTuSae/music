@@ -1,6 +1,6 @@
 <template>
-<div class="asideMenu">
-<div class="asideMenu-maskLayer" @click="closeAside"></div>
+<div class="asideMenu" id="asideMenu">
+<!-- <div class="asideMenu-maskLayer" @click="closeAside"></div> -->
   <div class="asideMenu-main"  ref="asideMenuMain">
   	<div class="asideMenu-top">
   		<div class="logo"><img src="../assets/icon/aside/logo.png" alt="头像"></div>
@@ -44,20 +44,21 @@ export default {
     }
   },
   computed:{
-
+  },
+  mounted(){
   },
   methods:{
     	sign(){
     		this.isSign="已签到";
     	},
     	//点击aside以外地方关闭aside
-    	closeAside(){
-    		var asideMenuMain=this.$refs.asideMenuMain;
-    		var e=window.event;
-    		if(asideMenuMain.contains(e.target)||asideMenuMain===e.target){}else{
-    			this.$store.commit('isShowAsideMenu',false);
-    		}
-    	}
+    	// closeAside(){
+    	// 	var asideMenuMain=this.$refs.asideMenuMain;
+    	// 	var e=window.event;
+    	// 	if(asideMenuMain.contains(e.target)||asideMenuMain===e.target){}else{
+    	// 		this.$store.commit('isShowAsideMenu',false);
+    	// 	}
+    	// }
     }
 }
 </script>
@@ -68,33 +69,21 @@ export default {
   background-size: $backSize;
 }
 .asideMenu{
-	width:100%;
+	width:70%;
 	height:100%;
 	position:absolute;
 	top:0;
 	left:0;
-	z-index:10;
-}
-.asideMenu-maskLayer{
-	width:100%;
-	height:100%;
-	z-index: 100;
-	// opacity: 0.8;
-	// filter: alpha(opacity=80);
-	background:rgba(0,0,0,0.05);
-	position:relative;
-	top:0;
-	left:0;
+	z-index:350;
 }
 .asideMenu-main{
-	width:70%;
+	width:100%;
 	height:100%;
 	box-shadow: 1px 0 20px gray;
 	background-color: white;
-	position: relative;
-	left:0;
-	top:0;
-	z-index: 200;
+	// position: relative;
+	// left:0;
+	// top:0;
 	display: flex;
 	flex-direction:column;
 	position: absolute;

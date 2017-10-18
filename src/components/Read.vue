@@ -1,8 +1,6 @@
 <template>
   <div class="read">
-  <transition name="show">
-    
-  </transition>
+    <div>{{show}}</div>
   </div>
 </template>
 
@@ -11,7 +9,7 @@ export default {
   name: 'musiclist',
   data () {
     return {
-      
+      show:'功能未完成'
     }
   }
 }
