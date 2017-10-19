@@ -64,6 +64,15 @@ methods:{
             musicID:this.musicData[index].id
             }
     }
+
+    // 判断是否点击为正在播放首歌
+    if(this.audio.index===index){
+      if(this.audio.audioDom.paused){
+        this.audio.audioDom.play();
+      }
+      return;
+    }
+
     this.$store.commit('newaudio',{index:index,src:''});
 
     // 判断连续点击，2s内连续点击只做最后一次请求
@@ -100,7 +109,7 @@ methods:{
 
 <style lang="scss" scoped>
 .musiclist{
-	flex:8;
+	flex:1;
 	overflow: auto;
   .music-list:active{
     background-color: #e6e6e6;
@@ -149,7 +158,7 @@ methods:{
             // margin-top:25px;
             display:inline-block;
             cursor:pointer;
-            background:url('../assets/icon/del.png') no-repeat center center;background-size: contain;
+            background:url('../assets/icon/close.png') no-repeat center center;background-size: contain;
           }
         }
 	}

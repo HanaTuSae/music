@@ -1,27 +1,31 @@
 <template>
   <div id="app">
+    <!-- 遮罩层 -->
     <transition name="isShowMaskLayer">
       <div class="maskLayer" @click="close" v-show="isShowMaskLayer"></div>
     </transition>
+
     <transition name="isshow">
       <div class="show" v-show="isShow">
-    <!-- 左侧栏 -->
-        <transition name="isShowAsideMenu" out-in>
+
+        <!-- 左侧栏 -->
+        <transition name="isShowAsideMenu" mode="out-in">
           <MMenu v-show="isShowAsideMenu"></MMenu>
         </transition>
 
+    <transition :name="isShowHeader" mode="out-in">
+    <div class="headerRouter" v-show="!isShowFind">
     <!-- 头部 -->
-    <transition :name="isShowHeader" out-in>
-    <MHeader v-show="!isShowFind"></MHeader>
-    </transition>
-
+    <MHeader></MHeader>
     <!-- 路由页面 -->
-    <transition :name="isShowHeader" out-in>
-    <router-view v-show="!isShowFind"></router-view>
+    <transition :name="isShowRouter">
+    <router-view></router-view>
+    </transition>
+    </div>
     </transition>
 
     <!-- 搜索 -->
-    <transition name="isShowFind" out-in>
+    <transition name="isShowFind" mode="out-in">
     <Find v-show="isShowFind"></Find>
     </transition>
 
@@ -31,7 +35,7 @@
   </transition>
 
   <!-- 播放界面 -->
-  <transition name="show" out-in>
+  <transition name="show" mode="out-in">
     <Play v-show="!isShow"></Play>
   </transition>
 
@@ -58,7 +62,8 @@ export default {
   // },
   data(){
     return {
-      isShowHeader:'isShowHeader'
+      isShowHeader:'isShowHeader',
+      isShowRouter:''
     }
   },
   created(){
@@ -90,6 +95,20 @@ export default {
     },
     isShowMusicList(){
       return this.$store.state.isShowMusicList;
+    }
+  },
+  watch:{
+    '$route'(to,from){
+      var routerList=['/','/musiclist','/recommend','/read'];
+      var toPathIndex=routerList.indexOf(to.path);
+      var fromPathIndex=routerList.indexOf(from.path);
+      if(toPathIndex>-1&&fromPathIndex>-1){
+        toPathIndex<fromPathIndex?this.isShowRouter='isShowRouterLeft':this.isShowRouter='isShowRouterRight';
+      }
+
+      // const toDepth = to.path.split('/').length;
+      // const fromDepth = from.path.split('/').length;
+      // this.isShowRouter = toDepth < fromDepth ? 'slide-right' : 'slide-left';
     }
   },
   mounted: function() {
@@ -176,7 +195,9 @@ i,a,button,span,li{
   top:0;
   left: 0;
   .headerRouter{
-    overflow:auto;
+    flex:1;
+    display:flex;
+    flex-direction:column;
   }
 }
 .maskLayer{
@@ -187,7 +208,7 @@ i,a,button,span,li{
   // filter: alpha(opacity=80);
   background:rgba(0,0,0,0.3);
   // filter: opacity(0.5) brightness(55%);
-  position:fixed;
+  position:absolute;
   top:0;
   left:0;
 }
@@ -252,11 +273,38 @@ i,a,button,span,li{
 .isShowMaskLayer-enter,.isShowMaskLayer-leave-active{
       opacity: 0;
     }
+    // 路由动画
+.isShowRouterLeft-enter-active,.isShowRouterRight-enter-active {
+      transition: all .5s linear;
+    }
+.isShowRouterLeft-leave-active,.isShowRouterRight-leave-active {
+      transition: all .0s linear;
+    }
+.isShowRouterLeft-enter,.isShowRouterRight-leave-active{
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+
+// .isShowRouterRight-enter-active {
+//       transition: all .5s linear;
+//     }
+// .isShowRouterRight-leave-active {
+//       transition: all .0s linear;
+//     }
+.isShowRouterLeft-leave-active,.isShowRouterRight-enter{
+      transform: translateX(100%);
+      opacity: 0;
+    }
+// .isShowRouterRight-leave-active{
+//       transform: translateX(-100%);
+//       opacity: 0;
+// }
 @media screen and (min-width: 768px){
 html,body{
    width:460px;
    margin: 0 auto;
    box-shadow: 0 0 20px gray;
 }
+
 }
 </style>

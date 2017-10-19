@@ -17,6 +17,6 @@ export default {
 
 <style lang="scss">
 .read{
-	flex:8;
+	flex:1;
 }
 </style>

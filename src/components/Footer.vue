@@ -66,6 +66,8 @@ methods:{
   width:100%;
   height:60px;
   box-shadow: 0 0 10px gray;
+  z-index:10;
+  background-color: white;
   .audio{
     width:100%;
     height:100%;

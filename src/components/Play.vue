@@ -33,7 +33,7 @@
   <div class="context">
 
     <!-- 歌词 -->
-    <transition name="isShowLyric" enter-active-class="animated fadeIn" leave-active-class="animated fadeOut" :duration="300" out-in>
+    <transition name="isShowLyric" enter-active-class="animated fadeIn" leave-active-class="animated fadeOut" :duration="300" mode="out-in">
   <div class="lyric" v-show="isShowLyric" >
   <!-- 音量 控制-->
     <div class="volume">
@@ -57,7 +57,7 @@
     <!-- <div class="contextImgSrc" :style="{backgroundImage:'url('+audio.imgsrc+')'}"></div> -->
     <!-- <div class="blur" ><img src="../assets/blur.jpg"></div> -->
     <!--  旋转图片-->
-    <transition name="isShowImg" enter-active-class="animated fadeIn" leave-active-class="animated fadeOut" :duration="300">
+    <transition name="isShowImg" enter-active-class="animated fadeIn" leave-active-class="animated fadeOut" :duration="300" mode="out-in">
     <div class="img" v-show="!isShowLyric" @click="showLyric"><img :src="audio.imgsrc" id="transformImg" ref="transformImg"></div>
   </transition>
 
@@ -272,11 +272,11 @@ export default {
         var currentTime=_this.currentTimeNum;
         _this.changeMusic(_this.audio.index);
         console.log(currentTime);
-        if('fastSeek' in audioDom){
-          audioDom.fastSeek(currentTime);
+        // if('fastSeek' in audioDom){
+          // audioDom.fastSeek(currentTime);
           console.log(111);
-        }
-        // audioDom.currentTime=currentTime;
+        // }
+        audioDom.currentTime=currentTime;
       }
      })
 
@@ -683,6 +683,7 @@ export default {
   background-repeat: no-repeat;
   background-position: center center;
   background-size:cover;
+  z-index:30;
   .blur{
       position: absolute;
       left:0;
@@ -756,7 +757,7 @@ export default {
     // z-index: 400;
     overflow-x:hidden;
     overflow-y: auto;
-    background-color:#e6e6e6;
+    background-color:#fafafa;
     tr{
       width:100%;
       height:40px;
@@ -944,7 +945,6 @@ export default {
       display:flex;
       align-items:center;
       justify-content:center;
-      transition:all .3s ease-in;
       .musiclist-icon{
         @include iconStyle('../assets/icon/musicMenu.png',contain);
       }

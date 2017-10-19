@@ -26,11 +26,18 @@
    		<!-- 热门搜索 -->
    		<div class="musicHot">
    			<div class="title">{{title.hot}}</div>
-   			<div class="searchHot" v-for="hot in searchHot" @click="musicHot(hot)">{{hot}}</div>
+   			<div class="searchHot" v-for="hot in searchHot" @click="musicHotHistory(hot)">{{hot}}</div>
    		</div>
 
    		<!-- 搜索历史 -->
-   		<div class="musicHistory"></div>
+   		<div class="musicHistory">
+            <div class="title">{{title.history}}</div>
+            <div class="musicHistoryList" v-for="(history,index) in musicHistoryData">
+              <span class="history-icon"></span>
+              <span class="historyName" @click="musicHotHistory(history)">{{history}}</span>
+              <span class="historyRemove" @click="delHistory(index)"></span>
+            </div> 
+      </div>
    	</div>
 
 	<!-- 搜索结果 -->
@@ -61,6 +68,7 @@ export default {
       musicName:'',//搜索值
       musicFindData:[],//存储搜索列表
       musicSuggestData:[],//存储搜索建议列表
+      musicHistoryData:[],//存储搜索历史列表
       bottomText:"上拉加载更多",
       pageNo:1,//页数
       totalCount:'',//总页数
@@ -70,12 +78,12 @@ export default {
       isShowSuggest:false,//显示搜索建议
       continueClick:null,//连续点击事件
       isSearch:false,//判断是否在搜索
-      isShowClose:false,//是否清除musicName
+      isShowClose:false,//是否显示清除按钮
       title:{
       	hot:'热门搜索',
       	history:'搜索历史'
       },
-      isShowMusicHotHistory:true
+      isShowMusicHotHistory:true//是否显示搜索热门和搜索历史
     }
   },
   created(){
@@ -84,6 +92,10 @@ export default {
     	if(this.searchHot==""){
     		this.$store.dispatch('searchHot');
     	}
+      // 判断localStorage有无搜索历史记录
+      if(localStorage.musicHistoryData!==''&&localStorage.musicHistoryData){
+        this.musicHistoryData=JSON.parse(localStorage.musicHistoryData);
+      }
   },
   computed:{
   	musicData(){
@@ -109,6 +121,12 @@ export default {
       },
       deep:true
     },
+    musicHistoryData:{
+      handler(val,oldval){
+        localStorage.musicHistoryData=JSON.stringify(val);
+      },
+      deep:true
+    },
     musicName:{
     	handler(val,oldval){
     		if(val&&this.isSearch==false){
@@ -122,6 +140,14 @@ export default {
     		}
     	},
     	deep:true
+    },
+    isSearch:{
+      handler(val,oldval){
+        if(val==true){
+          this.isShowMusicHotHistory=false;
+        }
+      },
+      deep:true
     }
   },
   methods:{
@@ -146,7 +172,15 @@ export default {
            	 musicName:activeMusicName
            	 }
         }
-        var _this=this;
+    var _this=this;
+
+    // 搜索历史
+    if(!this.isExistHistory(activeMusicName)){
+      if(this.musicHistoryData.length==5){
+        this.delHistory(0);
+      }
+      this.musicHistoryData.push(activeMusicName);
+    }
         // this.cancelSearch('/api/find-music');
     	if(activeMusicName){
 
@@ -242,56 +276,71 @@ export default {
             	}
         }
         var currentIndex="";
-
+        var cp=this.musicFindData[index].privilege.cp;//1
+        var sp=this.musicFindData[index].privilege.sp;//7
+        var subp=this.musicFindData[index].privilege.subp;//1
+        if(cp===0&&sp===0&&subp===0){
+          this.$toast('暂无歌曲资源,请选择其他歌曲');
+          return;
+        }
         // 检测musicData是否存在播放歌曲，有则播放该歌曲，无则增加歌曲并播放
         if(this.isExist(musicID)){
         		// var audioIndex=this.isExist(this.musicFindData[index].id);
         		currentIndex=this.isExist(musicID);
-    		this.$store.commit('newaudio',{index:currentIndex,src:''});
 
-    		// 判断连续点击，2s内连续点击只做最后一次请求
-    		if(this.continueClick!=null){
-        			clearTimeout(this.continueClick);
+            // 判断是否点击为正在播放首歌
+            if(this.audio.index===currentIndex){
+              if(this.audio.audioDom.paused){
+                this.audio.audioDom.play();
+              }
+              return;
+            }
+
+    		    this.$store.commit('newaudio',{index:currentIndex,src:''});
+
+    		    // 判断连续点击，2s内连续点击只做最后一次请求
+    		    if(this.continueClick!=null){
+        			   clearTimeout(this.continueClick);
       		}
       		this.continueClick=setTimeout(()=>{
 
       			// 播放请求
-    		     this.axios(config).then(function(response){
-    		     	if(_this.audio.index===currentIndex){// 超过2s点击判断是否为最后一次请求
-    		     		src=response.data.data[0].url;
-    		           	_this.$store.commit('newaudio',{index:currentIndex,src:src});
-    		    		_this.$store.commit('play',true);
-		 		_this.$store.commit('playImgSrc','stopImgSrc');
-    		     	}
-    		      }).catch(function(response){
-    				console.log(response)
+    		        this.axios(config).then(function(response){
+    		     	    if(_this.audio.index===currentIndex){// 超过2s点击判断是否为最后一次请求
+    		     		   src=response.data.data[0].url;
+    		           	    _this.$store.commit('newaudio',{index:currentIndex,src:src});
+    		    		        _this.$store.commit('play',true);
+		 		        _this.$store.commit('playImgSrc','stopImgSrc');
+    		     	    }
+    		        }).catch(function(response){
+    				        console.log(response)
     			    });
-    		},2000)
-    	}else{
-    		this.$store.commit('addmusicData',{id:musicID,name:musicname,src:'',musicImgSrc:musicImgSrc});
-    		currentIndex=this.musicData.length-1;
-    		this.$store.commit('newaudio',{index:currentIndex,src:''});
+    		    },2000)
+    	     }else{
+    		    this.$store.commit('addmusicData',{id:musicID,name:musicname,src:'',musicImgSrc:musicImgSrc});
+    		    currentIndex=this.musicData.length-1;
+    		    this.$store.commit('newaudio',{index:currentIndex,src:''});
 
-    		// 判断连续点击，2s内连续点击只做最后一次请求
-    		 if(this.continueClick!=null){
+    		    // 判断连续点击，2s内连续点击只做最后一次请求
+    		    if(this.continueClick!=null){
         			    clearTimeout(this.continueClick);
       		}
       		this.continueClick=setTimeout(()=>{
 
       			// 播放请求
-    		this.axios(config).then(function(response){
-    			if(_this.audio.index===currentIndex){// 超过2s点击判断是否为最后一次请求
-    				src=response.data.data[0].url;
-    		    		 _this.$store.commit('delmusicData',currentIndex);
-    		     		_this.$store.commit('addmusicData',{id:musicID,name:musicname,src:src,musicImgSrc:musicImgSrc});
-    		    		_this.$store.commit('newaudio',{index:currentIndex,src:src});
-    		   		 _this.$store.commit('play',true);
-		   		 _this.$store.commit('playImgSrc','stopImgSrc');
-    			}
-    		}).catch(function(response){
-    			    console.log(response)
-    			});
-    		},2000)
+    		         this.axios(config).then(function(response){
+    			         if(_this.audio.index===currentIndex){// 超过2s点击判断是否为最后一次请求
+    				              src=response.data.data[0].url;
+    		    		              _this.$store.commit('delmusicData',currentIndex);
+    		     	              _this.$store.commit('addmusicData',{id:musicID,name:musicname,src:src,musicImgSrc:musicImgSrc});
+    		    		              _this.$store.commit('newaudio',{index:currentIndex,src:src});
+    		   		              _this.$store.commit('play',true);
+		   		              _this.$store.commit('playImgSrc','stopImgSrc');
+    			         }
+    		          }).catch(function(response){
+    			               console.log(response)
+    			      });
+    		     },2000)
     		}
     },
 
@@ -301,10 +350,15 @@ export default {
     	this.isShowClose=false;
     },
 
-    // 
-    musicHot(hot){
-    	this.find(hot);
-    	this.isShowMusicHotHistory=false;
+    // 点击搜索热门keywords搜索
+    musicHotHistory(hotHistory){
+    	this.find(hotHistory);
+    	// this.isShowMusicHotHistory=false;
+    },
+
+    // 删除搜索历史
+    delHistory(index){
+      this.musicHistoryData.splice(index,1);
     },
 
   //判断是否存在歌曲
@@ -315,6 +369,16 @@ export default {
           }
         }
         return false;
+  },
+
+  // 判断是否存在搜索历史
+  isExistHistory(musicName){
+    for(var i=0;i<this.musicHistoryData.length;i++){
+      if(this.musicHistoryData[i]===musicName){
+        return true;
+      }
+    }
+    return false;
   },
 
   //加载更多
@@ -366,7 +430,6 @@ export default {
 		height:40px;
 		background-color: #f44336;
 		display:flex;
-		align-items:center;
 		.back{
 			flex:1;
 			display:flex;
@@ -378,6 +441,8 @@ export default {
 		}
 		.findContent{
 			flex:7;
+              display:flex;
+              align-items:center;
 			input{
 				width:95%;
 				height:30px;
@@ -419,7 +484,7 @@ export default {
 		right:3.5%;
 		box-shadow: 0 5px 20px gray;
 		background-color:#e6e6e6;
-		z-index:5;
+		z-index:20;
 		.musicSuggestList{
 			width:95%;
 			height:40px;
@@ -450,7 +515,13 @@ export default {
 	}
 	.musicHotHistory{
 		width:100%;
-		// height:100%;
+        flex:1;
+        display:flex;
+        flex-direction:column;
+        .musicHot{
+          width:100%;
+          flex:1;
+        }
 		.title{
 			height:20px;
 			line-height:20px;
@@ -469,6 +540,39 @@ export default {
 			background-color:#fafafa;
 			// color:#515151;
 		}
+          .musicHistory{
+            margin-top: 20px;
+            width:100%;
+            flex:3;
+            .musicHistoryList{
+              width:100%;
+              height:30px;
+              display:flex;
+              align-items:center;
+              margin: 10px 0;
+              span{
+                display:inline-block;
+              }
+              .history-icon{
+                width:20px;
+                height:20px;
+                margin-left: 10px;
+                background: url('../assets/icon/history1.svg') no-repeat center center;background-size: contain;
+              }
+              .historyName{
+                line-height:30px;
+                flex:1;
+                padding-left: 10px;
+                border-bottom: 1px solid rgba(0,0,0,0.1);
+              }
+              .historyRemove{
+                width:20px;
+                height:20px;
+                margin-right: 10px;
+                background: url('../assets/icon/close.png') no-repeat center center;background-size: contain;
+              }
+            }
+          }
 	}
 	.loading{
 		flex:1;

@@ -64,9 +64,26 @@ methods:{
     var musicID=this.hotTopData[index].id;
     var currentIndex="";
 
+    // var cp=this.hotTopData[index].privilege.cp;//1
+    // var sp=this.hotTopData[index].privilege.sp;//7
+    // var subp=this.hotTopData[index].privilege.subp;//1
+    // if(cp===0&&sp===0&&subp===0){
+    //   this.$toast('暂无歌曲资源,请选择其他歌曲');
+    //   return;
+    // }
+
     // 检测musicData是否存在播放歌曲，有则播放该歌曲，无则增加歌曲并播放
     if(this.isExist(musicID)){
-          currentIndex=this.isExist(musicID)
+          currentIndex=this.isExist(musicID);
+
+          // 判断是否点击为正在播放首歌
+          if(this.audio.index===currentIndex){
+            if(this.audio.audioDom.paused){
+              this.audio.audioDom.play();
+            }
+            return;
+          }
+
           this.$store.commit('newaudio',{index:currentIndex,src:''});
 
           // 判断连续点击，2s内连续点击只做最后一次请求
@@ -130,7 +147,7 @@ methods:{
 
 <style lang="scss" scoped>
 .musiclist{
-  flex:8;
+  flex:1;
   display:flex;
 }
 .loading{
