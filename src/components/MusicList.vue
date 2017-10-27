@@ -39,19 +39,6 @@ export default {
     }
   },
   mounted() {
-    // var musicName=document.getElementById('musicName');
-    // musicName.addEventListener('touchstart',function(ev){
-    //   var e=ev||window.event;
-    //   e.preventDefault();
-    // },{passive:true})
-    // musicName.addEventListener('touchmove',function(ev){
-    //   var e=ev||window.event;
-    //   e.preventDefault();
-    // },{passive:true})
-    // musicName.addEventListener('touchend',function(ev){
-    //   // var e=ev||window.event;
-    //   // e.preventDefault();
-    // })
 },
 methods:{
 	changeMusic(index){
@@ -109,7 +96,12 @@ methods:{
 
 <style lang="scss" scoped>
 .musiclist{
-	flex:1;
+	// flex:1;
+     width:100%;
+     height:100%;
+     position: absolute;
+     top:0;
+     left:0;
 	overflow: auto;
   .music-list:active{
     background-color: #e6e6e6;

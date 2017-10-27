@@ -1,5 +1,5 @@
 <template>
-<div class="musiclist">
+<div class="recommend">
   <div class="loading" v-show="isLoading"><mt-spinner :type="2" color="#515151" class="mt-spinner"></mt-spinner></div>
   <div class="musiclist-main" v-show="!isLoading">
   <div class="music-list" v-for="(music,index) in hotTopData" >
@@ -146,8 +146,13 @@ methods:{
 </script>
 
 <style lang="scss" scoped>
-.musiclist{
-  flex:1;
+.recommend{
+  // flex:1;
+  position: absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
   display:flex;
 }
 .loading{

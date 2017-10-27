@@ -21,7 +21,7 @@ const store = new Vuex.Store({
 		searchHot:[],
 		orderFlag:1,
 		audio:{
-			index:0,
+			index:-1,
 			src:"",
 			imgsrc:"http://p1.music.126.net/6y-UleORITEDbvrOLV0Q8A==/5639395138885805.jpg",
 			name:"NN - NN"

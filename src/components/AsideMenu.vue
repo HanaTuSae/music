@@ -74,7 +74,7 @@ export default {
 	position:absolute;
 	top:0;
 	left:0;
-	z-index:350;
+	z-index:360;
 }
 .asideMenu-main{
 	width:100%;

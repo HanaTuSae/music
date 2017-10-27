@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  name: 'musiclist',
+  name: 'read',
   data () {
     return {
       show:'功能未完成'
@@ -15,8 +15,15 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .read{
-	flex:1;
+	// flex:1;
+  width:100%;
+  height:100%;
+  position: absolute;
+  top:0;
+  left:0;
+  // width:50%;
+  // height:100%;
 }
 </style>
