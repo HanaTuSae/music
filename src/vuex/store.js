@@ -94,7 +94,7 @@ const store = new Vuex.Store({
 		},
 		//获取热门歌曲列表
 		hotTopList(context){
-			Vue.axios.post('/api/hot-toplist').then(function(response) {
+			Vue.axios.get('/api/hot-toplist').then(function(response) {
 				context.state.isLoading=false;
                 			context.state.hotTopData = response.data.result.tracks;
     			}).catch(function(response) {

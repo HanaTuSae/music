@@ -34,7 +34,7 @@
     </div>
     <div class="lyricMain" @click="closeLyric">
       <div class="loading" v-show="isLoadingLyric"><mt-spinner :type="2" color="white" class="mt-spinner"></mt-spinner></div>
-      <div class="lyricContent" v-show="!isLoadingLyric" ref="lyricContent" id="lyricContent">
+      <div class="lyricContent" v-show="!isLoadingLyric" ref="lyricContent">
         <ul :style="styleUl" id="lyricUl">
           <li v-for="(lyric,index) in currentLyric" :class="{active: index===currentLyricIndex}" >{{lyric.txt}}</li>
         </ul>
@@ -48,16 +48,16 @@
     <!-- <div class="blur" ><img src="../assets/blur.jpg"></div> -->
     <!--  旋转图片-->
     <transition :name="isShowImg" mode="out-in">
-    <div class="img" v-show="!isShowLyric" @click="showLyric"><img :src="audio.imgsrc" id="transformImg" ref="transformImg"></div>
+    <div class="img" v-show="!isShowLyric" @click="showLyric"><img :src="audio.imgsrc" ref="transformImg"></div>
   </transition>
 
     <div class="bar">
       <!-- 播放时间 -->
       <span class="nowTime">{{nowTime}}</span>
       <!-- 进度条 -->
-      <div class="totalBar">
-        <span class="nowBar" id="nowBar">
-          <span class="nowBar-icon"></span>
+      <div class="totalBar" ref="totalBar" @click="onAudioChange">
+          <span class="nowBar" ref="nowBar">
+          <span class="nowBar-icon" ref="nowBarIcon"></span>
         </span>
       </div>
       <!-- 总时间 -->
@@ -158,8 +158,6 @@ export default {
         this.lrcHeight=0;
         this.currentLyricIndex=-1;
         this.$refs.lyricContent.scrollTop=0;
-        // this.styleUl.height
-        // console.log(this.$refs.lyricContent.scrollTop);
 
         if(val=='empty'){
           this.currentLyric= [{'txt': '暂无歌词'}];
@@ -174,7 +172,6 @@ export default {
     },
     audio:{
       handler(val,oldval){
-        var nowBar=document.getElementById("nowBar");
         var currentMusic={
           index:val.index,
           id:this.musicData[val.index].id
@@ -183,52 +180,27 @@ export default {
         this.$store.dispatch('lyric',currentMusic);
         this.nowTime="00:00";
         this.currentTimeNum=0;
-        nowBar.style.width=0;
+        this.$refs.nowBar.style.width=0;
       },
       deep:true
     },
     currentTimeNum:{
       handler(val,oldval){
-        // console.log(val);
         for(let i in this.currentLyric){
-          // if(this.currentLyric[i].time===val){
-          //   this.currentLyricIndex=parseInt(i);//当前播放行歌词index，用以判断歌词高亮
-          // }
           i=parseInt(i);
           this.playLyric(i);//当前播放行歌词i，用以判断歌词高亮
-          // if(this.lyricSwiper===false){
-          //   if(this.currentLyric[i].time<=val){
-          //    this.getActiveIndex(i);
-          //  }
-          // }
         }
-
       },
       deep:true
-    },
-    // isShowLyric:{
-    //   handler(val,oldval){
-    //          if(val==true){
-    //   for(var i in this.currentLyric){
-    //       i=parseInt(i);
-    //       if(this.currentLyric[i].time<=this.currentTimeNum){
-    //         setTimeout(this.getActiveIndex(i),2000);
-    //         console.log(i);
-    //       }
-    //     }
-    //  }
-    //   },
-    //   deep:true
-    // }
+    }
   },
   mounted: function() {
      var _this=this;
      var interval="";
-     var styleUl=document.getElementById("lyricContent");
      var audioDom=document.getElementById("audio");
-     var nowBar=document.getElementById("nowBar");
      var transformImg=document.getElementById("transformImg");
 
+     // audio播放监听
      audioDom.addEventListener('play',function(){
       // 数据实时更新，使用$nextTick
         _this.$nextTick(function(){
@@ -237,33 +209,31 @@ export default {
         // 获取当前时间长度
         _this.nowTime=_this.changTimeStyle(audioDom.currentTime);
         //获取当前进度条位置
-        nowBar.style.width=((audioDom.currentTime/audioDom.duration)*100).toFixed(2)+"%";
+        _this.$refs.nowBar.style.width=((audioDom.currentTime/audioDom.duration)*100).toFixed(2)+"%";
       })
         //定时1秒刷新一次数据
         interval=setInterval(function(){
         _this.$nextTick(function(){
         _this.nowTime=_this.changTimeStyle(audioDom.currentTime);
         _this.currentTimeNum=Math.floor(audioDom.currentTime);
-        nowBar.style.width=((audioDom.currentTime/audioDom.duration)*100).toFixed(2)+"%";
+        _this.$refs.nowBar.style.width=((audioDom.currentTime/audioDom.duration)*100).toFixed(2)+"%";
       })
     },1000);
         // 音乐开始时图片转动
-        transformImg.style.animationPlayState="running";
-        // _this.$refs.transformImg.style.animationPlayState="running";
+        _this.$refs.transformImg.style.animationPlayState="running";
     })
 
      audioDom.addEventListener('pause',function(){
       // 清除定时器
       clearInterval(interval);
       // 音乐停止时图片停止转动
-      transformImg.style.animationPlayState="paused";
-      // _this.$refs.transformImg.style.animationPlayState="paused";
+      _this.$refs.transformImg.style.animationPlayState="paused";
      })
 
      audioDom.addEventListener('ended',function(){
       clearInterval(interval);
       _this.nowTime="00:00";
-      nowBar.style.width=0;
+      _this.$refs.nowBar.style.width=0;
      })
 
      audioDom.addEventListener('error',function(){
@@ -273,24 +243,21 @@ export default {
         console.log(currentTime);
         // if('fastSeek' in audioDom){
           // audioDom.fastSeek(currentTime);
-          console.log(111);
         // }
         audioDom.currentTime=currentTime;
       }
      })
 
-     // var lyrictouch=false;
-     var lyricContent=this.$refs.lyricContent;
-     lyricContent.addEventListener('touchstart',function(ev){
+     // 歌词滚动监听
+     this.$refs.lyricContent.addEventListener('touchstart',function(ev){
       var e=ev || window.event;
       // e.preventDefault();
       e.stopPropagation();
       _this.startX=e.changedTouches[0].pageX;
       _this.startY=e.changedTouches[0].pageY;
-      // lyrictouch=true;
      })
 
-     lyricContent.addEventListener('touchmove',function(ev){
+     this.$refs.lyricContent.addEventListener('touchmove',function(ev){
       var e=ev || window.event;
       // e.preventDefault();
       e.stopPropagation();
@@ -303,23 +270,50 @@ export default {
       if ( Math.abs(Y) > Math.abs(X) ){
         _this.$refs.lyricContent.scrollTop=movetop-Y;
       }
-      
     }
     _this.lyricSwiper=true;
-    // lyrictouch=false;
      })
 
      var clearSwiper='';
-     lyricContent.addEventListener('touchend',function(ev){
+     this.$refs.lyricContent.addEventListener('touchend',function(ev){
       var e=ev || window.event;
       e.stopPropagation();
       clearTimeout(clearSwiper);
       clearSwiper=setTimeout(function(){
         _this.lyricSwiper=false;
       },1500);
-      
       // styleUl.removeEventListener('touchstart',function(){});
       // styleUl.removeEventListener('touchmove',function(){});
+     })
+
+     // 进度条拖动监听
+     // this.$refs.nowBarIcon.addEventListener('touchstart',_this.onAudioChange,false);
+     var X=0;
+     this.$refs.nowBarIcon.addEventListener('touchmove',function(ev){
+      if(_this.audio.src===''){
+        return;
+      }
+      var e=ev || window.event;
+      if(e.changedTouches[0].pageX<_this.$refs.nowBar.offsetLeft){
+        X=0;
+      }else if(e.changedTouches[0].pageX>(_this.$refs.totalBar.offsetWidth+_this.$refs.totalBar.offsetLeft)){
+        X=_this.$refs.totalBar.offsetWidth;
+      }else{
+        X=e.changedTouches[0].pageX-_this.$refs.nowBar.offsetLeft;
+      }
+      // console.log(X);
+      _this.$refs.nowBar.style.width=(X/(_this.$refs.totalBar.offsetWidth)*100).toFixed(2)+'%';
+      // this.audio.audioDom.currentTime=X/this.$refs.totalBar.offsetWidth*this.audio.audioDom.duration;
+      _this.nowTime=_this.changTimeStyle(X/_this.$refs.totalBar.offsetWidth*_this.audio.audioDom.duration);
+     })
+
+     this.$refs.nowBarIcon.addEventListener('touchend',function(ev){
+      // _this.$refs.nowBar.style.width=(X/(_this.$refs.totalBar.offsetWidth)*100).toFixed(2)+'%';
+      _this.audio.audioDom.currentTime=X/_this.$refs.totalBar.offsetWidth*_this.audio.audioDom.duration;
+      if(_this.audio.audioDom.paused){
+        _this.audio.audioDom.play();
+      }
+      // _this.nowTime=_this.changTimeStyle(_this.audio.audioDom.currentTime);
      })
 },
 updated(){
@@ -345,13 +339,8 @@ updated(){
 
     //播放列表展示
     showMusicList(){
-      // var _this=this;
-      // var isShowMaskLayer='';
-      // clearTimeout(isShowMaskLayer);
       this.$store.commit('isShowMusicList',true);
-      // isShowMaskLayer=setTimeout(function(){
         this.$store.commit('isShowMaskLayer',true);
-      // },500)
     },
 
     // 打开歌词界面
@@ -363,8 +352,7 @@ updated(){
     closeLyric(){
       this.$store.commit('isShowLyric',false);
     },
-    onLyricChange(nowPropress){
-    },
+
 
     //上一首
     prevMusic(){
@@ -403,7 +391,6 @@ updated(){
       var index=this.audio.index==this.musicData.length-1?0:this.audio.index+1;
       var _this=this;
       //加载歌词请求
-      // this.$store.dispatch('lyric',this.musicData[this.audio.index].id);
       var config={
         method: 'post',
             url: '/api/play-music',
@@ -440,11 +427,7 @@ updated(){
       this.audio.audioDom.pause();
       this.$store.commit('play',false);
       this.$store.commit('playImgSrc','playImgSrc');
-      //图片旋转暂停
-      // this.$refs.transformImg.style.animationPlayState="paused";
     }else{
-      // if(this.audio.audioDom.error){
-        // this.changeMusic(this.audio.index);
         if(this.audio.src){
           this.audio.audioDom.play();
           this.$store.commit('play',true);
@@ -452,11 +435,6 @@ updated(){
         }else{
           this.$toast('请点击歌曲播放');
         }
-      // }else{
-        // this.audio.audioDom.play();
-        // this.$store.commit('play',true);
-      // }
-      // this.$refs.transformImg.style.animationPlayState="running";
     }
     },
 
@@ -535,7 +513,6 @@ updated(){
 
     //判断歌词高亮
     playLyric(index){
-      // index=parseInt(index);
       if(index==this.currentLyric.length-1&&this.currentTimeNum>=this.currentLyric[index].time){
         this.currentLyricIndex=index;
       }
@@ -546,17 +523,8 @@ updated(){
 
     //歌词滚动
     getActiveIndex(index){
-        // this.styleUl.marginTop=this.lrcHeight-index*40+'px';
         var activeLi=document.getElementById('lyricUl').getElementsByTagName('li');
-        // var activedLiHeight=0;
-        // // if(parseInt(index)>0){
-        //   for(var i=0;i<=index;i++){
-        //     activedLiHeight=activedLiHeight+activeLi[i].clientHeight;
-        //   }
-        //   activedLiHeight=0-activedLiHeight;
-        // }
         this.lrcHeight=index===0?0:this.lrcHeight+activeLi[index].clientHeight;
-        // this.styleUl.transform='translate3d(0,'+this.lrcHeight+'px,0) scale(1)';
         // var num=0;
         // var moveTop=(this.lrcHeight/80).toFixed(2);
         // // console.log(moveTop);
@@ -575,7 +543,6 @@ updated(){
         // this.lyricScroll=setTimeout(function(){
           this.$refs.lyricContent.scrollTop=this.lrcHeight;
         // },800);45/80   10ms
-        // this.styleUl.marginTop=this.lrcHeight+'px';
 
     },
 
@@ -616,7 +583,23 @@ updated(){
         this.$store.commit('getOrderFlag',flag);
         this.$toast(msg);
         this.orderIcon.backgroundImage='url('+url+')';
-    }
+    },
+
+    // 改变播放时间
+    onAudioChange(ev){
+      if(this.audio.src===''){
+        return;
+      }
+      var e=ev || window.event;
+      var X=e.pageX-this.$refs.nowBar.offsetLeft;
+      this.$refs.nowBar.style.width=(X/(this.$refs.totalBar.offsetWidth)*100).toFixed(2)+'%';
+      this.audio.audioDom.currentTime=X/this.$refs.totalBar.offsetWidth*this.audio.audioDom.duration;
+      this.nowTime=this.changTimeStyle(this.audio.audioDom.currentTime);
+      if(this.audio.audioDom.paused){
+        this.audio.audioDom.play();
+      }
+      // this.currentTimeNum=Math.floor(this.audio.audioDom.currentTime);
+    },
   }
 }
 </script>
@@ -768,22 +751,19 @@ updated(){
             .lyricContent{
               flex:1;
               display:flex;
-              // margin: 20px 0 50px 0;
               overflow: auto;
-              // z-index:300;
               position:relative;
               ul,li{
                 list-style-type: none;
               }
               ul{
-                // flex:1;
                 display:flex;
                 flex-direction:column;
                 position: absolute;
                 top:0;
                 left:0;
                 width:100%;
-                padding:60% 0 70% 0;
+                padding:50% 0 50% 0;
                 li{
                   width:90%;
                   line-height:25px;
@@ -814,8 +794,6 @@ updated(){
         display:inline-block;
       }
       .nowTime,.endTime{
-        // width:40px;
-        // height:15px;
         color:white;
         flex:1;
         text-align:center;
@@ -823,28 +801,26 @@ updated(){
       .totalBar{
         height:2px;
         flex:6;
-        margin:0 5px;
-        background-color: #e6e6e6;
+        margin:0 15px 0 5px;
         border: none;
-        display:flex;
+        background-color: #e6e6e6;
           .nowBar{
             height:100%;
             width:0;
             background-color:#8B2500;
-            margin-right: 10px;
             position: relative;
             display:flex;
             align-items:center;
             .nowBar-icon{
-            width:10px;
-            height:10px;
-            border-radius: 100%;
-            box-shadow: 0 0 5px gray;
-            background-color: #e6e6e6;
-            position: absolute;
-            left:100%;
-          }
-          }
+              width:10px;
+              height:10px;
+              border-radius: 100%;
+              box-shadow: 0 0 5px gray;
+              background-color: #e6e6e6;
+              position: absolute;
+              left:100%;
+              }
+            }
       }
     }
   }

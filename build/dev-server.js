@@ -33,8 +33,34 @@ var  request  = require ('request');
 //
 var Encrypt = require('../crypto.js');
 // require('big-integer');
+// var user={};
+function randomUserAgent() {
+  const userAgentList = [
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1',
+    'Mozilla/5.0 (Linux; Android 5.0; SM-G900P Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Mobile Safari/537.36',
+    'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Mobile Safari/537.36',
+    'Mozilla/5.0 (Linux; Android 5.1.1; Nexus 6 Build/LYZ28E) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Mobile Safari/537.36',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_2 like Mac OS X) AppleWebKit/603.2.4 (KHTML, like Gecko) Mobile/14F89;GameHelper',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/603.2.4 (KHTML, like Gecko) Version/10.1.1 Safari/603.2.4',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 10_0 like Mac OS X) AppleWebKit/602.1.38 (KHTML, like Gecko) Version/10.0 Mobile/14A300 Safari/602.1',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:46.0) Gecko/20100101 Firefox/46.0',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:46.0) Gecko/20100101 Firefox/46.0',
+    'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0)',
+    'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0; Trident/4.0)',
+    'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)',
+    'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Win64; x64; Trident/6.0)',
+    'Mozilla/5.0 (Windows NT 6.3; Win64, x64; Trident/7.0; rv:11.0) like Gecko',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/13.10586',
+    'Mozilla/5.0 (iPad; CPU OS 10_0 like Mac OS X) AppleWebKit/602.1.38 (KHTML, like Gecko) Version/10.0 Mobile/14A300 Safari/602.1'
+  ]
+  const num = Math.floor(Math.random() * userAgentList.length)
+  return userAgentList[num]
+}
+
 var cookie=null;
-var user={};
 function createWebAPIRequest(path, data, c, response, method) {
   method = method ? method : "POST";
   var music_req = '';
@@ -50,8 +76,8 @@ function createWebAPIRequest(path, data, c, response, method) {
       'Content-Type': 'application/x-www-form-urlencoded',
       'Referer': 'http://music.163.com',
       'Host': 'music.163.com',
-      'Cookie': cookie,
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36'
+      'Cookie': c,
+      'User-Agent': randomUserAgent()
     }
   }, function(res) {
     res.on('error', function(err) {
@@ -102,6 +128,7 @@ function createRequest(path, method, data, callback) {
       'Referer': 'http://music.163.com',
       'Cookie': 'appver=1.5.6',
       'Content-Type': 'application/x-www-form-urlencoded',
+      'User-Agent': randomUserAgent()
     },
   }, function(res) {
     res.setEncoding('utf8');
@@ -147,7 +174,7 @@ apiRoutes.post('/find-music',function(req,res){
 
 //搜索建议
 apiRoutes.get('/find-music-suggest',function(req,res){
-  var cookie = req.get('Cookie') ? req.get('Cookie') : (req.body.cookie ? req.body.cookie : '');
+  var cookie = req.get('Cookie') ? req.get('Cookie') : (req.query.cookie ? req.query.cookie : '');
   var data={
     'csrf_token': '',
     's': req.query.musicName || '',
@@ -167,8 +194,8 @@ apiRoutes.post('/play-music',function(req,res){
 });
 
 //热歌榜
-apiRoutes.post('/hot-toplist',function(req,res){
-  var cookie = req.get('Cookie') ? req.get('Cookie') : (req.body.cookie ? req.body.cookie : '');
+apiRoutes.get('/hot-toplist',function(req,res){
+  // var cookie = req.get('Cookie') ? req.get('Cookie') : (req.body.cookie ? req.body.cookie : '');
   createRequest('/api/playlist/detail?id=3778678','GET', {}, function(response) {
     res.setHeader("Content-Type", "application/json");
     res.send(response);
@@ -178,10 +205,9 @@ apiRoutes.post('/hot-toplist',function(req,res){
 //歌词
 apiRoutes.get('/lyric',function(req,res){
   var id=req.query.musicID;
-  createRequest('/api/song/lyric?os=osx&id=' + id + '&lv=-1&kv=-1&tv=-1', 'GET', null, function(response) {
-    res.setHeader("Content-Type", "application/json");
-    res.send(response);
-  });
+  var data={};
+  var cookie = req.get('Cookie') ? req.get('Cookie') : (req.query.cookie ? req.query.cookie : '');
+  createWebAPIRequest('/weapi/song/lyric?os=osx&id=' + id + '&lv=-1&kv=-1&tv=-1', data, cookie, res,'POST');
 });
 
 // 搜索热门
