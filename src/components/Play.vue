@@ -312,6 +312,7 @@ export default {
       _this.audio.audioDom.currentTime=X/_this.$refs.totalBar.offsetWidth*_this.audio.audioDom.duration;
       if(_this.audio.audioDom.paused){
         _this.audio.audioDom.play();
+        _this.$store.commit('playImgSrc','stopImgSrc');
       }
       // _this.nowTime=_this.changTimeStyle(_this.audio.audioDom.currentTime);
      })
@@ -423,18 +424,18 @@ updated(){
 
     //播放暂停
     playMusic(){
-      if(this.playing){
-      this.audio.audioDom.pause();
-      this.$store.commit('play',false);
-      this.$store.commit('playImgSrc','playImgSrc');
-    }else{
-        if(this.audio.src){
+      if(this.audio.audioDom.paused){
+      if(this.audio.src){
           this.audio.audioDom.play();
           this.$store.commit('play',true);
           this.$store.commit('playImgSrc','stopImgSrc');
         }else{
           this.$toast('请点击歌曲播放');
         }
+    }else{
+        this.audio.audioDom.pause();
+      this.$store.commit('play',false);
+      this.$store.commit('playImgSrc','playImgSrc');
     }
     },
 
@@ -591,12 +592,19 @@ updated(){
         return;
       }
       var e=ev || window.event;
-      var X=e.pageX-this.$refs.nowBar.offsetLeft;
+      var X=0;
+      if(e.offsetX>this.$refs.totalBar.offsetWidth){
+        X=this.$refs.totalBar.offsetWidth;
+      }else{
+        X=e.offsetX;
+      }
+      // console.log(X,e.offsetX,this.$refs.totalBar.offsetLeft);
       this.$refs.nowBar.style.width=(X/(this.$refs.totalBar.offsetWidth)*100).toFixed(2)+'%';
       this.audio.audioDom.currentTime=X/this.$refs.totalBar.offsetWidth*this.audio.audioDom.duration;
       this.nowTime=this.changTimeStyle(this.audio.audioDom.currentTime);
       if(this.audio.audioDom.paused){
         this.audio.audioDom.play();
+        this.$store.commit('playImgSrc','stopImgSrc');
       }
       // this.currentTimeNum=Math.floor(this.audio.audioDom.currentTime);
     },
