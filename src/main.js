@@ -11,12 +11,15 @@ import 'normalize.css'
 import 'animate.css'
 import MintUI from 'mint-ui'
 import 'mint-ui/lib/style.css'
+import VueAwesomeSwiper from 'vue-awesome-swiper'
+import 'swiper/dist/css/swiper.min.css'
 // import { Loadmore,Spinner } from 'mint-ui';
 
 Vue.config.productionTip = false
 Vue.use(VueAxios,axios);
 Vue.use(Vuex);
 Vue.use(MintUI);
+Vue.use(VueAwesomeSwiper);
 // Vue.component(Loadmore.name, Loadmore);
 // Vue.component(Spinner.name, Spinner);
 

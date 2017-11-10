@@ -31,7 +31,29 @@ export default new Router({
     {
       path: '/recommend',
       name: 'Recommend',
-      component: resolve => require(['../components/Recommend.vue'], resolve)
+      component: resolve => require(['../components/Recommend.vue'], resolve),
+      children:[
+      {
+        path: '/recommend',
+        // name:'music',
+        component: resolve => require(['../components/Music.vue'], resolve)
+      },
+      {
+        path: '/recommend/music',
+        name:'music',
+        component: resolve => require(['../components/Music.vue'], resolve)
+      },
+      {
+        path: '/recommend/video',
+        name:'video',
+        component: resolve => require(['../components/Video.vue'], resolve)
+      },
+      {
+        path: '/recommend/radio',
+        name:'radio',
+        component: resolve => require(['../components/Radio.vue'], resolve)
+      }
+      ]
     },
     {
       path: '/read',

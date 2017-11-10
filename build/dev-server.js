@@ -188,15 +188,44 @@ apiRoutes.post('/play-music',function(req,res){
   var musicID=req.body.musicID;
   //var musicUrl="http://music.163.com/api/song/detail/?id="+musicID+"&ids=%5B"+musicID+"%5D";
   var br=128000 || req.body.br;
-  var data={"ids":[musicID],"br":br,"csrf_token":""};
+  var data={
+    "ids":[musicID],
+    "br":br,
+    "csrf_token":""
+  };
   var cookie = req.get('Cookie') ? req.get('Cookie') : (req.body.cookie ? req.body.cookie : '');
   createWebAPIRequest('/weapi/song/enhance/player/url', data, cookie, res);
 });
 
-//热歌榜
-apiRoutes.get('/hot-toplist',function(req,res){
+//排行榜
+apiRoutes.get('/toplist',function(req,res){
+  var top_list_all = {
+  '0': ['云音乐新歌榜', '/api/playlist/detail?id=3779629'],
+  '1': ['云音乐热歌榜', '/api/playlist/detail?id=3778678'],
+  '2': ['网易原创歌曲榜', '/api/playlist/detail?id=2884035'],
+  '3': ['云音乐飙升榜', '/api/playlist/detail?id=19723756'],
+  '4': ['云音乐电音榜', '/api/playlist/detail?id=10520166'],
+  '5': ['UK排行榜周榜', '/api/playlist/detail?id=180106'],
+  '6': ['美国Billboard周榜', '/api/playlist/detail?id=60198'],
+  '7': ['KTV嗨榜', '/api/playlist/detail?id=21845217'],
+  '8': ['iTunes榜', '/api/playlist/detail?id=11641012'],
+  '9': ['Hit FM Top榜', '/api/playlist/detail?id=120001'],
+  '10': ['日本Oricon周榜', '/api/playlist/detail?id=60131'],
+  '11': ['韩国Melon排行榜周榜', '/api/playlist/detail?id=3733003'],
+  '12': ['韩国Mnet排行榜周榜', '/api/playlist/detail?id=60255'],
+  '13': ['韩国Melon原声周榜', '/api/playlist/detail?id=46772709'],
+  '14': ['中国TOP排行榜(港台榜)', '/api/playlist/detail?id=112504'],
+  '15': ['中国TOP排行榜(内地榜)', '/api/playlist/detail?id=64016'],
+  '16': ['香港电台中文歌曲龙虎榜', '/api/playlist/detail?id=10169002'],
+  '17': ['华语金曲榜', '/api/playlist/detail?id=4395559'],
+  '18': ['中国嘻哈榜', '/api/playlist/detail?id=1899724'],
+  '19': ['法国 NRJ EuroHot 30周榜', '/api/playlist/detail?id=27135204'],
+  '20': ['台湾Hito排行榜', '/api/playlist/detail?id=112463'],
+  '21': ['Beatport全球电子舞曲榜', '/api/playlist/detail?id=3812895']
+  }
+  var id=req.query.id;
   // var cookie = req.get('Cookie') ? req.get('Cookie') : (req.body.cookie ? req.body.cookie : '');
-  createRequest('/api/playlist/detail?id=3778678','GET', {}, function(response) {
+  createRequest(top_list_all[id][1],'GET', {}, function(response) {
     res.setHeader("Content-Type", "application/json");
     res.send(response);
   });
@@ -229,6 +258,75 @@ apiRoutes.get('/search-hot',function(req,res){
     errno: 0,
     searchHot: rHot
   });
+})
+
+// banner
+apiRoutes.get('/banner',function(req,res){
+  var cookie = req.get('Cookie') ? req.get('Cookie') : (req.query.cookie ? req.query.cookie : '');
+  var data={};
+  createWebAPIRequest('/weapi/v2/banner/get', data, cookie, res,'POST');
+})
+
+// 推荐歌单
+apiRoutes.get('/recommend-songList',function(req,res){
+  var cookie = req.get('Cookie') ? req.get('Cookie') : (req.query.cookie ? req.query.cookie : '');
+  var data={};
+  createWebAPIRequest('/weapi/personalized/playlist', data, cookie, res,'POST');
+})
+
+// 歌单详情
+apiRoutes.get('/songList-detail',function(req,res){
+  var cookie = req.get('Cookie') ? req.get('Cookie') : (req.query.cookie ? req.query.cookie : '');
+  var id=req.query.id;
+  var data={
+    'id':id,
+    'offset':0,
+    'total':true,
+    'limit':1000,
+    'n':1000,
+    'csrf_token': ''
+  };
+  createWebAPIRequest('/weapi/v3/playlist/detail', data, cookie, res,'POST');
+})
+
+// 独家放送
+apiRoutes.get('/private-content',function(req,res){
+  var cookie = req.get('Cookie') ? req.get('Cookie') : (req.query.cookie ? req.query.cookie : '');
+  var data={};
+  createWebAPIRequest('/weapi/personalized/privatecontent', data, cookie, res,'POST');
+})
+
+// 推荐新音乐
+apiRoutes.get('/recommend-newSong',function(req,res){
+  var cookie = req.get('Cookie') ? req.get('Cookie') : (req.query.cookie ? req.query.cookie : '');
+  var data={
+    'type': 'recommend'
+  };
+  createWebAPIRequest('/weapi/personalized/newsong', data, cookie, res,'POST');
+})
+
+// 推荐MV
+apiRoutes.get('/recommend-MV',function(req,res){
+  var cookie = req.get('Cookie') ? req.get('Cookie') : (req.query.cookie ? req.query.cookie : '');
+  var data={};
+  createWebAPIRequest('/weapi/personalized/mv', data, cookie, res,'POST');
+})
+
+// 推荐节目
+apiRoutes.get('/recommend-program',function(req,res){
+  var cookie = req.get('Cookie') ? req.get('Cookie') : (req.query.cookie ? req.query.cookie : '');
+  var data={
+    // 'cateId': req.query.type,
+    // 'csrf_token': ''
+  };
+  createWebAPIRequest('/api/topic/index/selected/list', data, cookie, res,'POST');
+})
+
+// 推荐电台
+apiRoutes.get('/recommend-radio',function(req,res){
+  var cookie = req.get('Cookie') ? req.get('Cookie') : (req.query.cookie ? req.query.cookie : '');
+  var data={};
+  createWebAPIRequest('/weapi/personalized/djprogram', data, cookie, res,'POST');
 })
 
 

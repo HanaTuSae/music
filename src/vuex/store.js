@@ -19,6 +19,13 @@ const store = new Vuex.Store({
 		hotTopData:[],
 		lyricData:[],
 		searchHot:[],
+		banners:[],
+		songlist:[],
+		privateContent:[],
+		newsong:[],
+		recommendMV:[],
+		recommendProgram:[],
+		recommendRadio:[],
 		orderFlag:1,
 		audio:{
 			index:-1,
@@ -92,9 +99,9 @@ const store = new Vuex.Store({
     				});
 			}
 		},
-		//获取热门歌曲列表
-		hotTopList(context){
-			Vue.axios.get('/api/hot-toplist').then(function(response) {
+		//获取排行榜，传入排行榜对应id获取
+		topList(context,id){
+			Vue.axios.get('/api/toplist',{params:{id:id}}).then(function(response) {
 				context.state.isLoading=false;
                 			context.state.hotTopData = response.data.result.tracks;
     			}).catch(function(response) {
@@ -126,7 +133,64 @@ const store = new Vuex.Store({
 			}).catch(function(error){
 				console.log(error);
 			})
-		}
+		},
+		// 获取banner
+		banner(context){
+			Vue.axios.get('/api/banner').then(function(response){
+				context.state.banners=response.data.banners;
+			}).catch(function(error){
+				console.log(error);
+			})
+		},
+		// 获取推荐歌单
+		songlist(context){
+			Vue.axios.get('/api/recommend-songList').then(function(response){
+				context.state.songlist=response.data.result;
+			}).catch(function(error){
+				console.log(error);
+			})
+		},
+		// 获取独家放送
+		privateContent(context){
+			Vue.axios.get('/api/private-content').then(function(response){
+				context.state.privateContent=response.data.result;
+			}).catch(function(error){
+				console.log(error);
+			})
+		},
+		// 获取新歌
+		newsong(context){
+			Vue.axios.get('/api/recommend-newSong').then(function(response){
+				context.state.newsong=response.data.result;
+			}).catch(function(error){
+				console.log(error);
+			})
+		},
+		// 获取MV
+		recommendMV(context){
+			Vue.axios.get('/api/recommend-MV').then(function(response){
+				context.state.recommendMV=response.data.result;
+			}).catch(function(error){
+				console.log(error);
+			})
+		},
+		// 获取节目
+		recommendProgram(context){
+			Vue.axios.get('/api/recommend-program').then(function(response){
+				context.state.recommendProgram=response.data.data;
+				// console.log(response.data);
+			}).catch(function(error){
+				console.log(error);
+			})
+		},
+		// 获取电台
+		recommendRadio(context){
+			Vue.axios.get('/api/recommend-radio').then(function(response){
+				context.state.recommendRadio=response.data.result;
+			}).catch(function(error){
+				console.log(error);
+			})
+		},
 	}
 })
 export default store
