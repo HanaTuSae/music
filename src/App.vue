@@ -180,6 +180,7 @@ methods:{
   touchStart(ev){
     var e=ev || window.event;
     // e.preventDefault();
+    // e.stopPropagation();
     this.startX=e.changedTouches[0].pageX;
     this.startY=e.changedTouches[0].pageY;
     // this.isTouch=true;
@@ -188,6 +189,7 @@ methods:{
     var e=ev || window.event;
     // e.preventDefault();
     // if(this.isTouch){
+      // e.stopPropagation();
         this.moveEndX=e.changedTouches[0].pageX;
       this.moveEndY=e.changedTouches[0].pageY;
       // var X=this.moveEndX-this.startX;

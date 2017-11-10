@@ -1,29 +1,45 @@
 <template>
 <div class="recommend">
-  <div class="loading" v-show="isLoading"><mt-spinner :type="2" color="#515151" class="mt-spinner"></mt-spinner></div>
+  <div class="nav">
+    <router-link to="/recommend/music" class="nav-menu" :class="{linkActive:this.getRoutePath==='/recommend'}">{{recommend.music}}</router-link>
+    <router-link to="/recommend/video" class="nav-menu">{{recommend.video}}</router-link>
+    <router-link to="/recommend/radio" class="nav-menu">{{recommend.radio}}</router-link>
+  </div>
+  <div class="recommend-content">
+    <router-view ></router-view>
+  </div>
+  </div>
+<!--   <div class="loading" v-show="isLoading"><mt-spinner :type="2" color="#515151" class="mt-spinner"></mt-spinner></div>
   <div class="musiclist-main" v-show="!isLoading">
   <div class="music-list" v-for="(music,index) in hotTopData" >
     <img  class="music-img" v-lazy="music.album.picUrl">
     <span class="music-index">{{index+1}}</span>
     <span class="music-name" @click="changeMusic(index)">{{music.artists[0].name+' - '+music.name}}</span>
   </div>
-  </div>
+  </div> -->
   </div>
 </template>
 
 <script>
+// import { swiper, swiperSlide } from 'vue-awesome-swiper'
 export default {
   name: 'recommend',
+  // components: { swiper, swiperSlide},
   data () {
     return {
-      continueClick:null
+      continueClick:null,
+      recommend:{
+        music:'音乐',
+        video:'视频',
+        radio:'电台'
+      }
     }
   },created(){
     //获取热门歌曲列表
-    if(this.hotTopData==""){
-    this.$store.commit('isLoading',true);
-    this.$store.dispatch('hotTopList');
-  }
+  //   if(this.hotTopData==""){
+  //   this.$store.commit('isLoading',true);
+  //   this.$store.dispatch('topList',1);
+  // }
   },
   computed:{
     hotTopData(){
@@ -37,6 +53,9 @@ export default {
     },
     audio(){
       return this.$store.state.audio;
+    },
+    getRoutePath(){
+      return this.$route.path;
     }
   },
   mounted() {
@@ -154,57 +173,83 @@ methods:{
   width:100%;
   height:100%;
   display:flex;
-}
-.loading{
-    flex:1;
-    overflow: auto;
+  flex-direction:column;
+  .nav{
+    width:80%;
+    height:40px;
     display:flex;
-    justify-content: center;
-        align-items: center;
-    .mt-spinner{
-      width:50px;
-      height:50px;
+    align-items:center;
+    margin:0 10%;
+    .nav-menu{
+      flex:1;
+      line-height:40px;
+      display:inline-block;
+      text-align:center;
+      color:#333;
+      text-decoration:none;
+      font-size:18px;
+    }
+    .linkActive{
+      color:#f44336;
+      border-bottom: 2px solid #f44336;
+      margin-bottom: 2px;
     }
   }
-.musiclist-main{
-  flex:1;
-  overflow: auto;
-  .music-list:active{
-    background-color: #e6e6e6;
-  }
-  .music-list{
-    width:100%;
-    height:70px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    display:flex;
-    .music-img,img[lazy=loading]{
-          width:60px;
-          height:60px;
-          margin:5px 10px;
-        }
-        img[lazy=loading]{
-          background-color: #e6e6e6;
-        }
-        span{
-          height:70px;
-          display: inline-block;
-          // vertical-align: top;
-          line-height: 70px;
-        }
-        .music-index{
-          width:30px;
-          text-align: center;
-        }
-        .music-name{
-          flex:7;
-          overflow:hidden;
-          padding-left: 10px;
-          padding-right:10px;
-          font-size: 18px;
-          cursor:pointer;
-          -webkit-tap-highlight-color: rgba(0,0,0,0);
-            -webkit-tap-highlight-color: transparent;
-        }
+  .recommend-content{
+    flex:1;
+    overflow: auto;
   }
 }
+// .loading{
+//     flex:1;
+//     overflow: auto;
+//     display:flex;
+//     justify-content: center;
+//         align-items: center;
+//     .mt-spinner{
+//       width:50px;
+//       height:50px;
+//     }
+//   }
+// .musiclist-main{
+//   flex:1;
+//   overflow: auto;
+//   .music-list:active{
+//     background-color: #e6e6e6;
+//   }
+//   .music-list{
+//     width:100%;
+//     height:70px;
+//     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+//     display:flex;
+//     .music-img,img[lazy=loading]{
+//           width:60px;
+//           height:60px;
+//           margin:5px 10px;
+//         }
+//         img[lazy=loading]{
+//           background-color: #e6e6e6;
+//         }
+//         span{
+//           height:70px;
+//           display: inline-block;
+//           // vertical-align: top;
+//           line-height: 70px;
+//         }
+//         .music-index{
+//           width:30px;
+//           text-align: center;
+//         }
+//         .music-name{
+//           flex:7;
+//           overflow:hidden;
+//           padding-left: 10px;
+//           padding-right:10px;
+//           font-size: 18px;
+//           cursor:pointer;
+//           -webkit-tap-highlight-color: rgba(0,0,0,0);
+//             -webkit-tap-highlight-color: transparent;
+//         }
+//   }
+// }
 </style>
