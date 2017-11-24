@@ -1,14 +1,31 @@
 <template>
   <div class="header">
-   <div class="nav">
-    <div class="menu"><i class="menu-icon" @click="showAsideMenu"></i></div>
-    <div class="music">
-      <div class="musiclist"><router-link to="/musiclist" :class="{linkActive:this.getRoutePath==='/'}"><i class="musiclist-icon" :class="{active:this.getRoutePath==='/musiclist'||this.getRoutePath==='/'}"></i></router-link></div>
-      <div class="recommend"><router-link to="/recommend"><i class="recommend-icon" :class="{active:this.getRoutePath.indexOf('/recommend')!=-1}"></i></router-link></div>
-      <div class="read"><router-link to="/read"><i class="read-icon" :class="{active:this.getRoutePath==='/read'}"></i></router-link></div>
+    <div class="nav">
+
+      <div class="menu"><i class="menu-icon" @click="showAsideMenu"></i></div>
+
+      <div class="music">
+        <div class="musiclist">
+          <router-link to="/musiclist" :class="{linkActive:this.getRoutePath==='/'}">
+            <i class="musiclist-icon" :class="{active:this.getRoutePath==='/musiclist'||this.getRoutePath==='/'}"></i>
+          </router-link>
+        </div>
+
+        <div class="recommend">
+          <router-link to="/recommend">
+            <i class="recommend-icon" :class="{active:this.getRoutePath.indexOf('/recommend')!=-1}"></i>
+          </router-link>
+        </div>
+
+        <div class="read">
+          <router-link to="/read">
+            <i class="read-icon" :class="{active:this.getRoutePath==='/read'}"></i>
+          </router-link>
+        </div>
+      </div>
+
+      <div class="find"><i class="find-icon" @click="isShowFind"></i></div>
     </div>
-    <div class="find"><i class="find-icon" @click="isShowFind"></i></div>
-   </div>
   </div>
 </template>
 
@@ -47,8 +64,9 @@ export default {
     },
     isShowFind(){
       this.$store.commit('isShowFind',true);
+      this.$store.commit('isShowHeader',false);
     }
-}
+  }
 }
 </script>
 
@@ -62,68 +80,68 @@ export default {
   height:40px;
   background-color: #f44336;
   .nav{
-  width:100%;
-  height:100%;
-  display: flex;
-  .menu{
-    flex:1;
-    padding-left:10px;
-    display:flex;
-    align-items:center;
-    .menu-icon{
-      @include iconStyle('../assets/icon/menu.png');
-    }
-  }
-  .music{
-    flex:3;
-    display:flex;
-    .musiclist{
+    width:100%;
+    height:100%;
+    display: flex;
+    .menu{
       flex:1;
+      padding-left:10px;
       display:flex;
-      justify-content:center;
       align-items:center;
-      .musiclist-icon{
-        @include iconStyle('../assets/icon/music.svg');
+      .menu-icon{
+        @include iconStyle('../assets/icon/menu.png');
       }
-      .musiclist-icon.active{
-      @include iconStyle('../assets/icon/music-active.svg');
     }
+    .music{
+      flex:3;
+      display:flex;
+      .musiclist{
+        flex:1;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        .musiclist-icon{
+          @include iconStyle('../assets/icon/music.svg');
+        }
+        .musiclist-icon.active{
+          @include iconStyle('../assets/icon/music-active.svg');
+        }
+      }
+      .recommend{
+        flex:1;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        .recommend-icon{
+          @include iconStyle('../assets/icon/recommend.svg');
+        }
+        .recommend-icon.active{
+          @include iconStyle('../assets/icon/recommend-active.svg');
+        }
+      }
+      .read{
+        flex:1;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        .read-icon{
+          @include iconStyle('../assets/icon/read.svg');
+        }
+        .read-icon.active{
+          @include iconStyle('../assets/icon/read-active.svg');
+        }
+      }
     }
-    .recommend{
+    .find{
       flex:1;
+      padding-right: 10px;
       display:flex;
-      justify-content:center;
+      justify-content:flex-end;
       align-items:center;
-      .recommend-icon{
-        @include iconStyle('../assets/icon/recommend.svg');
-      }
-       .recommend-icon.active{
-      @include iconStyle('../assets/icon/recommend-active.svg');
-    }
-    }
-    .read{
-      flex:1;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      .read-icon{
-        @include iconStyle('../assets/icon/read.svg');
-      }
-      .read-icon.active{
-        @include iconStyle('../assets/icon/read-active.svg');
+      .find-icon{
+        @include iconStyle('../assets/icon/find.png');
       }
     }
-  }
-  .find{
-    flex:1;
-    padding-right: 10px;
-    display:flex;
-    justify-content:flex-end;
-    align-items:center;
-    .find-icon{
-      @include iconStyle('../assets/icon/find.png');
-    }
-  }
   }
 }
 i{
@@ -131,14 +149,14 @@ i{
   width:22px;
   height:22px;
   cursor:pointer;
-    }
-    .linkActive{
-      width:100%;
-      height:40px;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      border-bottom: 2px solid white;
-      margin-bottom: 2px;
-    }
+}
+.linkActive{
+  width:100%;
+  height:40px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  border-bottom: 2px solid white;
+  margin-bottom: 2px;
+}
 </style>

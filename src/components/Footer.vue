@@ -1,10 +1,10 @@
 <template>
   <div class="footer">
-  <div class="audio">
-    <img :src="audio.imgsrc" class="imgsrc" @click="isShow">
-    <span class="audioName" @click="isShow">{{audio.name}}</span>
-    <span @click="play()" class="play" :class="playImgSrc"></span>
-  </div>
+    <div class="audio">
+      <img :src="audio.imgsrc" class="imgsrc" @click="isShow">
+      <span class="audioName" @click="isShow">{{audio.name}}</span>
+      <span @click="play()" class="play" :class="playImgSrc"></span>
+    </div>
     <!-- <audio v-bind:src="audio.src" ref="audio" controls="controls" :autoplay="playing" hidden="hidden"></audio> -->
   </div>
 </template>
@@ -30,33 +30,27 @@ export default {
     }
   },
   mounted: function() {
-    
-},
-methods:{
-  isShow(){
-    this.$store.commit('isShow',false);
   },
-  play(){
-    if(this.playing){
-      this.audio.audioDom.pause();
-      this.$store.commit('play',false);
-      this.$store.commit('playImgSrc','playImgSrc');
-    }else{
-      if(this.audio.src){
-        this.audio.audioDom.play();
-        this.$store.commit('play',true);
-        this.$store.commit('playImgSrc','stopImgSrc');
+  methods:{
+    isShow(){
+      this.$store.commit('isShow',false);
+    },
+    play(){
+      if(this.playing){
+        this.audio.audioDom.pause();
+        this.$store.commit('play',false);
+        this.$store.commit('playImgSrc','playImgSrc');
       }else{
-        this.$toast('请点击歌曲播放');
+        if(this.audio.src){
+          this.audio.audioDom.play();
+          this.$store.commit('play',true);
+          this.$store.commit('playImgSrc','stopImgSrc');
+        }else{
+          this.$toast('请点击歌曲播放');
+        }
       }
-      // console.log(this.audio.audioDom.error);
-      // if(this.audio.audioDom.error){
-      //   _this.changeMusic(this.audio.index);
-      // }
-      
     }
   }
-}
 }
 </script>
 

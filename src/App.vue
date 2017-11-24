@@ -6,51 +6,58 @@
     </transition>
 
     <!-- <transition name="isshow"> -->
-      <div class="show" v-show="isShow">
+    <div class="show" v-show="isShow">
 
-        <!-- 左侧栏 -->
-        <transition name="isShowAsideMenu" mode="out-in">
-          <MMenu v-show="isShowAsideMenu"></MMenu>
-        </transition>
+      <!-- 左侧栏 -->
+      <transition name="isShowAsideMenu" mode="out-in">
+        <MMenu v-show="isShowAsideMenu"></MMenu>
+      </transition>
 
-    <transition :name="isShowHeader" mode="out-in">
-    <div class="headerRouter" v-show="!isShowFind">
+      <transition name="isShowHeader" mode="out-in">
+        <div class="headerRouter" v-show="isShowHeader">
 
-    <!-- 头部 -->
-    <MHeader></MHeader>
+          <!-- 头部 -->
+          <MHeader></MHeader>
 
-    <!-- 路由页面 -->
-      <div class="routerView">
-        <transition :name="isShowRouter">
-      <keep-alive>
-      <router-view ></router-view>
-    </keep-alive>
-    </transition>
+          <!-- 路由页面 -->
+          <div class="routerView">
+            <transition :name="isShowRouter">
+              <keep-alive>
+                <router-view ></router-view>
+              </keep-alive>
+            </transition>
+          </div>
+        </div>
+      </transition>
+
+      <!-- 搜索 -->
+      <transition :name="isShowList" mode="out-in">
+        <Find v-show="isShowFind"></Find>
+      </transition>
+
+      <!-- 歌单详情 -->
+      <transition :name="isShowList" mode="out-in">
+        <songlistDetail v-show="isShowSonglistDetail"></songlistDetail>
+      </transition>
+      <!-- 歌单列表 -->
+      <!-- 排行榜列表 -->
+      <!-- 排行榜详情 -->
+
+      <!-- Mini播放器 -->
+      <MFooter></MFooter>
     </div>
-    
-    </div>
+    <!-- </transition> -->
+
+    <!-- 播放界面 -->
+    <transition name="show" mode="out-in">
+      <Play v-show="!isShow"></Play>
     </transition>
 
-    <!-- 搜索 -->
-    <transition name="isShowFind" mode="out-in">
-    <Find v-show="isShowFind"></Find>
+    <transition name="isShowMusicList" out-in>
+      <PlayMusicList v-show="isShowMusicList"></PlayMusicList>
     </transition>
 
-    <!-- Mini播放器 -->
-    <MFooter></MFooter>
-  </div>
-  <!-- </transition> -->
-
-  <!-- 播放界面 -->
-  <transition name="show" mode="out-in">
-    <Play v-show="!isShow"></Play>
-  </transition>
-
-  <transition name="isShowMusicList" out-in>
-     <PlayMusicList v-show="isShowMusicList"></PlayMusicList>
-</transition>
-
-  <audio v-bind:src="audio.src" ref="audio" id="audio" controls="controls" :autoplay="playing" hidden="hidden">当前浏览器不支持audio</audio>
+    <audio v-bind:src="audio.src" ref="audio" id="audio" controls="controls" :autoplay="playing" hidden="hidden">当前浏览器不支持audio</audio>
   </div>
 </template>
 
@@ -61,13 +68,14 @@ import Find from './components/Find.vue';
 import MFooter from './components/Footer.vue';
 import Play from './components/Play.vue';
 import PlayMusicList from './components/PlayMusicList.vue';
+import songlistDetail from './components/songlistDetail.vue';
 
 export default {
   name: 'app',
-  components: { MHeader,MMenu,MFooter,Play,Find,PlayMusicList},
+  components: { MHeader,MMenu,MFooter,Play,Find,PlayMusicList,songlistDetail},
   data(){
     return {
-      isShowHeader:'isShowHeader',
+      isShowList:'isShowFind',
       isShowRouter:'',
       startX:null,
       startY:null,
@@ -106,6 +114,12 @@ export default {
     },
     isShowMusicList(){
       return this.$store.state.isShowMusicList;
+    },
+    isShowHeader(){
+      return this.$store.state.isShowHeader;
+    },
+    isShowSonglistDetail(){
+      return this.$store.state.isShowSonglistDetail;
     }
   },
   watch:{
@@ -130,74 +144,72 @@ export default {
     })
 
     this.routerView=document.getElementsByClassName('routerView')[0];
-     this.routerView.addEventListener('touchstart',_this.touchStart,false);
-     this.routerView.addEventListener('touchmove',_this.touchMove,false);
+    this.routerView.addEventListener('touchstart',_this.touchStart,false);
+    this.routerView.addEventListener('touchmove',_this.touchMove,false);
     this.routerView.addEventListener('touchend',_this.touchEnd,false);
     // this.routerView.removeEventListener('touchstart',_this.touchStart,false);
     // this.routerView.removeEventListener('touchmove',_this.touchMove,false);
     // this.routerView.removeEventListener('touchend',_this.touchEnd,false);
-},
-updated(){
-
-},
-methods:{
-  next(){
-    var index='';
-    switch(this.orderFlag){
-      case 1:index=this.audio.index==this.musicData.length-1?0:this.audio.index+1;break;
-      case 2:return;break;
-      case 3:index=this.getRandomNum(0,this.musicData.length-1);break;
-    }
-    var _this=this;
-    var config={
+  },
+  updated(){
+  },
+  methods:{
+    next(){
+      var index='';
+      switch(this.orderFlag){
+        case 1:index=this.audio.index==this.musicData.length-1?0:this.audio.index+1;break;
+        case 2:return;break;
+        case 3:index=this.getRandomNum(0,this.musicData.length-1);break;
+      }
+      var _this=this;
+      var config={
         method: 'post',
         url: '/api/play-music',
         data: {
-        musicID:this.musicData[index].id
+          musicID:this.musicData[index].id
         }
-    }
-    this.$store.commit('newaudio',{index:index,src:''});
-    this.axios(config).then(function(response){
-      if(_this.audio.index===index){
-        var src=response.data.data[0].url;
-        _this.$store.commit('newaudio',{index:index,src:src});
       }
+      this.$store.commit('newaudio',{index:index,src:''});
+      this.axios(config).then(function(response){
+        if(_this.audio.index===index){
+          var src=response.data.data[0].url;
+          _this.$store.commit('newaudio',{index:index,src:src});
+        }
       }).catch(function(response){
         console.log(response)
       });
-  },
+    },
 
-  // 在min和max之间生成一个整数
-  getRandomNum(min,max){
-    return Math.floor(Math.random()*(max-min+1)+min);
-  },
+    // 在min和max之间生成一个整数
+    getRandomNum(min,max){
+      return Math.floor(Math.random()*(max-min+1)+min);
+    },
 
-  close(){
-    this.$store.commit('isShowMaskLayer',false);
-    this.$store.commit('isShowMusicList',false);
-    this.$store.commit('isShowAsideMenu',false);
-  },
-  touchStart(ev){
-    var e=ev || window.event;
-    // e.preventDefault();
-    // e.stopPropagation();
-    this.startX=e.changedTouches[0].pageX;
-    this.startY=e.changedTouches[0].pageY;
-    // this.isTouch=true;
-  },
-  touchMove(ev){
-    var e=ev || window.event;
-    // e.preventDefault();
-    // if(this.isTouch){
+    close(){
+      this.$store.commit('isShowMaskLayer',false);
+      this.$store.commit('isShowMusicList',false);
+      this.$store.commit('isShowAsideMenu',false);
+    },
+    touchStart(ev){
+      var e=ev || window.event;
+      // e.preventDefault();
       // e.stopPropagation();
-        this.moveEndX=e.changedTouches[0].pageX;
+      this.startX=e.changedTouches[0].pageX;
+      this.startY=e.changedTouches[0].pageY;
+      // this.isTouch=true;
+    },
+    touchMove(ev){
+      var e=ev || window.event;
+      // e.preventDefault();
+      // if(this.isTouch){
+      // e.stopPropagation();
+      this.moveEndX=e.changedTouches[0].pageX;
       this.moveEndY=e.changedTouches[0].pageY;
       // var X=this.moveEndX-this.startX;
       // var Y=this.moveEndY-this.startY;
       // var routerPath=this.$route.path;
       //   if ( Math.abs(X) > Math.abs(Y) && X > 0){//手指向右滑动
       //   if(routerPath==='/recommend'){
-          
       //   }else if(routerPath==='/read'){
       //   }
       // }else if(Math.abs(X) > Math.abs(Y) && X < 0){//手指向左滑动
@@ -207,31 +219,31 @@ methods:{
       // }
       // }
       // this.isTouch=false;
-  },
-  touchEnd(ev){
-    var e=ev || window.event;
+    },
+    touchEnd(ev){
+      var e=ev || window.event;
       // e.stopPropagation();
       if(this.moveEndX){
-      var X=this.moveEndX-this.startX;
-      var Y=this.moveEndY-this.startY;
-      var routerPath=this.$route.path;
+        var X=this.moveEndX-this.startX;
+        var Y=this.moveEndY-this.startY;
+        var routerPath=this.$route.path;
         if ( Math.abs(X) > Math.abs(Y) && X > 100){//向右滑动
-        if(routerPath==='/recommend'){
-          this.$router.push('/musiclist');
-        }else if(routerPath==='/read'){
-          this.$router.push('/recommend');
+          if(routerPath==='/recommend'){
+            this.$router.push('/musiclist');
+          }else if(routerPath==='/read'){
+            this.$router.push('/recommend');
+          }
+        }else if(Math.abs(X) > Math.abs(Y) && X < -100){//向左滑动
+          if(routerPath==='/recommend'){
+            this.$router.push('/read');
+          }else if(routerPath==='/musiclist'||routerPath==='/'){
+            this.$router.push('/recommend');
+          }
         }
-      }else if(Math.abs(X) > Math.abs(Y) && X < -100){//向左滑动
-        if(routerPath==='/recommend'){
-          this.$router.push('/read');
-        }else if(routerPath==='/musiclist'||routerPath==='/'){
-          this.$router.push('/recommend');
-        }
-      }
       }
       this.moveEndX=null;
+    }
   }
-}
 }
 </script>
 
@@ -271,7 +283,7 @@ i,a,button,span,li{
     position:absolute;
     top:0;
     left:0;
-}
+  }
 }
 .show{
   display: flex;
@@ -295,90 +307,89 @@ i,a,button,span,li{
 
 // 播放界面动画
 .show-enter-active {
-      transition: all .5s ease-out;
-    }
+  transition: all .5s ease-out;
+}
 .show-leave-active {
-      transition: all .5s ease-out;
-    }
+  transition: all .5s ease-out;
+}
 .show-enter, .show-leave-active {
-      transform: translateY(100%);
-      opacity: 0;
-    }
+  transform: translateY(100%);
+  opacity: 0;
+}
 
 // 头部动画
 .isShowHeader-enter-active{
   transition: all .5s ease-out;
 }
 .isShowHeader-enter{
-      transform: translateX(-100%);
-      opacity: 0;
-    }
+  transform: translateX(-100%);
+  opacity: 0;
+}
 // 搜索动画
 .isShowFind-enter-active {
-      transition: all .5s ease-out;
-    }
+  transition: all .5s ease-out;
+}
 .isShowFind-leave-active {
-      transition: all .0s ease-out;
-    }
+  transition: all .0s ease-out;
+}
 .isShowFind-enter,.isShowFind-leave-active{
-      transform: translateX(100%);
-      opacity: 0;
-    }
+  transform: translateX(100%);
+  opacity: 0;
+}
 //侧栏动画
 .isShowAsideMenu-enter-active {
-      transition: all .5s ease-out;
-    }
+  transition: all .5s ease-out;
+}
 .isShowAsideMenu-leave-active {
-      transition: all .5s ease-out;
-    }
+  transition: all .5s ease-out;
+}
 .isShowAsideMenu-enter,.isShowAsideMenu-leave-active{
-      transform: translateX(-100%);
-      opacity: 0;
-    }
-    // 遮罩层动画
+  transform: translateX(-100%);
+  opacity: 0;
+}
+// 遮罩层动画
 .isShowMaskLayer-enter-active {
-      transition: all .5s ease-out;
-    }
+  transition: all .5s ease-out;
+}
 .isShowMaskLayer-leave-active {
-      transition: all .5s ease-out;
-    }
+  transition: all .5s ease-out;
+}
 .isShowMaskLayer-enter,.isShowMaskLayer-leave-active{
-      opacity: 0;
-    }
-    // 路由动画
+  opacity: 0;
+}
+// 路由动画
 .isShowRouterLeft-enter-active,.isShowRouterRight-enter-active {
-      transition: all .5s linear;
-    }
+  transition: all .5s linear;
+}
 .isShowRouterLeft-leave-active,.isShowRouterRight-leave-active {
-      transition: all .5s linear;
-    }
+  transition: all .5s linear;
+}
 .isShowRouterLeft-enter,.isShowRouterRight-leave-active{
-      transform: translateX(100%);
-      // opacity: 0;
-    }
+  transform: translateX(100%);
+  // opacity: 0;
+}
 .isShowRouterLeft-leave-active,.isShowRouterRight-enter{
-      transform: translateX(-100%);
-      // opacity: 0;
-    }
-
-  // 歌曲列表动画
-  .isShowMusicList-enter-active {
-      transition: all .5s ease-out;
-    }
-.isShowMusicList-leave-active {
-      transition: all .5s ease-out;
-    }
-.isShowMusicList-enter,.isShowMusicList-leave-active{
-      transform: translateY(100%);
-      opacity: 0;
-    }
-
-@media screen and (min-width: 768px){
-html,body{
-   width:460px;
-   margin: 0 auto;
-   box-shadow: 0 0 20px gray;
+  transform: translateX(-100%);
+  // opacity: 0;
 }
 
+// 歌曲列表动画
+.isShowMusicList-enter-active {
+  transition: all .5s ease-out;
+}
+.isShowMusicList-leave-active {
+  transition: all .5s ease-out;
+}
+.isShowMusicList-enter,.isShowMusicList-leave-active{
+  transform: translateY(100%);
+  opacity: 0;
+}
+
+@media screen and (min-width: 768px){
+  html,body{
+    width:460px;
+    margin: 0 auto;
+    box-shadow: 0 0 20px gray;
+  }
 }
 </style>

@@ -1,12 +1,12 @@
 <template>
-   <div class="find">
+  <div class="find">
 
    	<!-- head -->
    	<div class="findNav">
    		<div class="back"><i class="back-icon" @click="isShowFind"></i></div>
    		<div class="findContent">
-   		     <input type="text" name="findMusic" placeholder="歌名/歌手" ref="findMusic" @keyup.enter="find()" v-model="musicName" maxlength="30">
-   		     <div class="close" v-show="isShowClose" @click="cancelMusicName"><i class="close-icon"></i></div>
+   		  <input type="text" name="findMusic" placeholder="歌名/歌手" ref="findMusic" @keyup.enter="find()" v-model="musicName" maxlength="30">
+   		  <div class="close" v-show="isShowClose" @click="cancelMusicName"><i class="close-icon"></i></div>
    		</div>
    	</div>
 
@@ -16,10 +16,10 @@
    			<span>搜索 </span>
    			<span class="suggestName">"{{musicName}}"</span>
    		</div>
-   	    	<div class="musicSuggestList" v-for="(suggest,index) in musicSuggestData">
-   	    	      <span class="suggest-icon"></span>
-   	    	      <span class="suggestName" @click="find(suggest.name)">{{suggest.name}}</span>
-   	         </div>
+   	  <div class="musicSuggestList" v-for="(suggest,index) in musicSuggestData">
+   	    <span class="suggest-icon"></span>
+   	    <span class="suggestName" @click="find(suggest.name)">{{suggest.name}}</span>
+   	  </div>
    	</div>
 
    	<div class="musicHotHistory" v-show="isShowMusicHotHistory">
@@ -31,33 +31,35 @@
 
    		<!-- 搜索历史 -->
    		<div class="musicHistory">
-            <div class="title">{{title.history}}</div>
-            <div class="musicHistoryList" v-for="(history,index) in musicHistoryData">
-              <span class="history-icon"></span>
-              <span class="historyName" @click="musicHotHistory(history)">{{history}}</span>
-              <span class="historyRemove" @click="delHistory(index)"></span>
-            </div> 
+        <div class="title">{{title.history}}</div>
+        <div class="musicHistoryList" v-for="(history,index) in musicHistoryData">
+          <span class="history-icon"></span>
+          <span class="historyName" @click="musicHotHistory(history)">{{history}}</span>
+          <span class="historyRemove" @click="delHistory(index)"></span>
+        </div>
       </div>
    	</div>
 
-	<!-- 搜索结果 -->
+	  <!-- 搜索结果 -->
    	<div class="loading" v-show="isLoading"><mt-spinner :type="2" color="#515151" class="mt-spinner"></mt-spinner></div>
    	<div class="musicList" v-show="!isLoading">
-   	<mt-loadmore :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" ref="loadmore" @bottom-status-change="handleBottomChange" :auto-fill="false">
-   		<div class="music-list" v-for="(music,index) in musicFindData">
-  	        <span class="music-index">{{index+1}}</span>
-  	        <div class="musicName" @click="playMusic(index)">
-  	            <span class="music-name" >{{music.name}}</span>
-  	            <span class="author">{{music.ar[0].name}}</span>
-  	        </div>
-   		</div>
-   		<div slot="bottom" class="mint-loadmore-bottom" v-show="isLoadmore">
-            	    <span v-show="bottomStatus !== 'loading'" :class="{ 'rotate': bottomStatus === 'pull' }">{{bottomText}}</span>
-            	    <span v-show="bottomStatus === 'loading'" class="loadmore"><mt-spinner :type="3" color="#515151" ></mt-spinner></span>
-        		</div>
+   	  <mt-loadmore :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" ref="loadmore" @bottom-status-change="handleBottomChange" :auto-fill="false">
+   		  <div class="music-list" v-for="(music,index) in musicFindData">
+  	      <span class="music-index">{{index+1}}</span>
+  	      <div class="musicName" @click="playMusic(index)">
+  	        <span class="music-name" >{{music.name}}</span>
+  	        <span class="author">{{music.ar[0].name}}</span>
+  	      </div>
+   		  </div>
+   		  <div slot="bottom" class="mint-loadmore-bottom" v-show="isLoadmore">
+          <span v-show="bottomStatus !== 'loading'" :class="{ 'rotate': bottomStatus === 'pull' }">{{bottomText}}</span>
+          <span v-show="bottomStatus === 'loading'" class="loadmore">
+            <mt-spinner :type="3" color="#515151" ></mt-spinner>
+          </span>
+        </div>
    		</mt-loadmore>
    	</div>
-   </div>
+  </div>
 </template>
 
 <script>
@@ -88,14 +90,14 @@ export default {
   },
   created(){
   	this.musicName="";
-    	this.musicFindData=[];
-    	if(this.searchHot==""){
-    		this.$store.dispatch('searchHot');
-    	}
-      // 判断localStorage有无搜索历史记录
-      if(localStorage.musicHistoryData!==''&&localStorage.musicHistoryData){
-        this.musicHistoryData=JSON.parse(localStorage.musicHistoryData);
-      }
+    this.musicFindData=[];
+    if(this.searchHot==""){
+    	this.$store.dispatch('searchHot');
+    }
+    // 判断localStorage有无搜索历史记录
+    if(localStorage.musicHistoryData!==''&&localStorage.musicHistoryData){
+      this.musicHistoryData=JSON.parse(localStorage.musicHistoryData);
+    }
   },
   computed:{
   	musicData(){
@@ -154,6 +156,7 @@ export default {
   	// 退出搜索页面
     isShowFind(){
       this.$store.commit('isShowFind',false);
+      this.$store.commit('isShowHeader',true);
       this.musicName="";
       this.musicFindData=[];
       this.isShowMusicHotHistory=true;
@@ -166,22 +169,22 @@ export default {
     	var activeMusicName=this.musicName;
     	var config={
     		method: 'post',
-            	url: '/api/find-music',
-            	headers:{'Content-Type': 'application/json'},
-            	data: {
-           	 musicName:activeMusicName
-           	 }
+        url: '/api/find-music',
+        headers:{'Content-Type': 'application/json'},
+        data: {
+          musicName:activeMusicName
         }
-    var _this=this;
-
-    // 搜索历史
-    if(!this.isExistHistory(activeMusicName)){
-      if(this.musicHistoryData.length==5){
-        this.delHistory(0);
       }
-      this.musicHistoryData.push(activeMusicName);
-    }
-        // this.cancelSearch('/api/find-music');
+      var _this=this;
+
+      // 搜索历史
+      if(!this.isExistHistory(activeMusicName)){
+        if(this.musicHistoryData.length==5){
+          this.delHistory(0);
+        }
+        this.musicHistoryData.push(activeMusicName);
+      }
+      // this.cancelSearch('/api/find-music');
     	if(activeMusicName){
 
     	   //初始化搜索建议
@@ -200,19 +203,19 @@ export default {
     	  this.allLoaded=false;
 
     	  // 搜索请求
-  	   this.axios(config).then(function(response){
-  	   	if(activeMusicName===_this.musicName){//判断是否为最后一次请求，防止上一次数据未请求成功即开始请求下次，导致数据混乱
-  	   		_this.$store.commit('isLoading',false);
-  		  	_this.musicFindData=response.data.result.songs;
-  		  	_this.totalCount=Math.ceil(response.data.result.songCount/20);//返回数据以每页20个分页得出总页数
-  		  	_this.isSearch=false;
-  	   	}
-  	      }).catch(function(response) {
-              		_this.$store.commit('isLoading',false);
-              		_this.isSearch=false;
-              		console.log(response);
-         	 	});
-        }
+  	    this.axios(config).then(function(response){
+  	   	  if(activeMusicName===_this.musicName){//判断是否为最后一次请求，防止上一次数据未请求成功即开始请求下次，导致数据混乱
+  	   		  _this.$store.commit('isLoading',false);
+  		  	  _this.musicFindData=response.data.result.songs;
+  		  	  _this.totalCount=Math.ceil(response.data.result.songCount/20);//返回数据以每页20个分页得出总页数
+  		  	  _this.isSearch=false;
+  	   	  }
+  	    }).catch(function(response) {
+          _this.$store.commit('isLoading',false);
+          _this.isSearch=false;
+          console.log(response);
+        });
+      }
     },
 
     // 搜索建议
@@ -222,25 +225,25 @@ export default {
 
     	var config={
     		method: 'get',
-            	url: '/api/find-music-suggest',
-            	headers:{'Content-Type': 'application/json'},
-            	params: {
-           	 musicName:this.musicName
-           	 }
+        url: '/api/find-music-suggest',
+        headers:{'Content-Type': 'application/json'},
+        params: {
+          musicName:this.musicName
         }
-        var currentName=this.musicName;
-        var _this=this;
-        if(this.musicName){
-        	this.axios(config).then(function(response){
-        		if(currentName==_this.musicName){
-        			_this.musicSuggestData=response.data.result.songs;
-        		}
+      }
+      var currentName=this.musicName;
+      var _this=this;
+      if(this.musicName){
+        this.axios(config).then(function(response){
+        	if(currentName==_this.musicName){
+        		_this.musicSuggestData=response.data.result.songs;
+        	}
         		
-        		// console.log(response.data.result.songs);
-        	}).catch(function(error){
-        		console.log(error);
-        	})
-        }
+        	// console.log(response.data.result.songs);
+        }).catch(function(error){
+        	console.log(error);
+        })
+      }
     },
 
     //取消请求
@@ -269,79 +272,79 @@ export default {
     	var src="";
     	var config={
     		method: 'post',
-            	url: '/api/play-music',
-            	headers:{'Content-Type': 'application/json'},
-            	data: {
-            	musicID:musicID
-            	}
+        url: '/api/play-music',
+        headers:{'Content-Type': 'application/json'},
+        data: {
+          musicID:musicID
         }
-        var currentIndex="";
-        var cp=this.musicFindData[index].privilege.cp;//1
-        var sp=this.musicFindData[index].privilege.sp;//7
-        var subp=this.musicFindData[index].privilege.subp;//1
-        if(cp===0&&sp===0&&subp===0){
-          this.$toast('暂无歌曲资源,请选择其他歌曲');
+      }
+      var currentIndex="";
+      var cp=this.musicFindData[index].privilege.cp;//1
+      var sp=this.musicFindData[index].privilege.sp;//7
+      var subp=this.musicFindData[index].privilege.subp;//1
+      if(cp===0&&sp===0&&subp===0){
+        this.$toast('暂无歌曲资源,请选择其他歌曲');
+        return;
+      }
+      // 检测musicData是否存在播放歌曲，有则播放该歌曲，无则增加歌曲并播放
+      if(this.isExist(musicID)){
+        // var audioIndex=this.isExist(this.musicFindData[index].id);
+        currentIndex=this.isExist(musicID);
+
+        // 判断是否点击为正在播放首歌
+        if(this.audio.index===currentIndex){
+          if(this.audio.audioDom.paused){
+            this.audio.audioDom.play();
+          }
           return;
         }
-        // 检测musicData是否存在播放歌曲，有则播放该歌曲，无则增加歌曲并播放
-        if(this.isExist(musicID)){
-        		// var audioIndex=this.isExist(this.musicFindData[index].id);
-        		currentIndex=this.isExist(musicID);
 
-            // 判断是否点击为正在播放首歌
-            if(this.audio.index===currentIndex){
-              if(this.audio.audioDom.paused){
-                this.audio.audioDom.play();
-              }
-              return;
-            }
+    		this.$store.commit('newaudio',{index:currentIndex,src:''});
 
-    		    this.$store.commit('newaudio',{index:currentIndex,src:''});
+    		// 判断连续点击，2s内连续点击只做最后一次请求
+    		if(this.continueClick!=null){
+        	clearTimeout(this.continueClick);
+      	}
+      	this.continueClick=setTimeout(()=>{
 
-    		    // 判断连续点击，2s内连续点击只做最后一次请求
-    		    if(this.continueClick!=null){
-        			   clearTimeout(this.continueClick);
-      		}
-      		this.continueClick=setTimeout(()=>{
+      		// 播放请求
+    		  this.axios(config).then(function(response){
+    		    if(_this.audio.index===currentIndex){// 超过2s点击判断是否为最后一次请求
+    		     	src=response.data.data[0].url;
+    		      _this.$store.commit('newaudio',{index:currentIndex,src:src});
+    		    	_this.$store.commit('play',true);
+		 		      _this.$store.commit('playImgSrc','stopImgSrc');
+    		    }
+    		  }).catch(function(response){
+    				console.log(response)
+    			});
+    		},2000)
+    	}else{
+    		this.$store.commit('addmusicData',{id:musicID,name:musicname,src:'',musicImgSrc:musicImgSrc});
+    		currentIndex=this.musicData.length-1;
+    		this.$store.commit('newaudio',{index:currentIndex,src:''});
 
-      			// 播放请求
-    		        this.axios(config).then(function(response){
-    		     	    if(_this.audio.index===currentIndex){// 超过2s点击判断是否为最后一次请求
-    		     		   src=response.data.data[0].url;
-    		           	    _this.$store.commit('newaudio',{index:currentIndex,src:src});
-    		    		        _this.$store.commit('play',true);
-		 		        _this.$store.commit('playImgSrc','stopImgSrc');
-    		     	    }
-    		        }).catch(function(response){
-    				        console.log(response)
-    			    });
-    		    },2000)
-    	     }else{
-    		    this.$store.commit('addmusicData',{id:musicID,name:musicname,src:'',musicImgSrc:musicImgSrc});
-    		    currentIndex=this.musicData.length-1;
-    		    this.$store.commit('newaudio',{index:currentIndex,src:''});
+    		// 判断连续点击，2s内连续点击只做最后一次请求
+    		if(this.continueClick!=null){
+        	clearTimeout(this.continueClick);
+      	}
+      	this.continueClick=setTimeout(()=>{
 
-    		    // 判断连续点击，2s内连续点击只做最后一次请求
-    		    if(this.continueClick!=null){
-        			    clearTimeout(this.continueClick);
-      		}
-      		this.continueClick=setTimeout(()=>{
-
-      			// 播放请求
-    		         this.axios(config).then(function(response){
-    			         if(_this.audio.index===currentIndex){// 超过2s点击判断是否为最后一次请求
-    				              src=response.data.data[0].url;
-    		    		              _this.$store.commit('delmusicData',currentIndex);
-    		     	              _this.$store.commit('addmusicData',{id:musicID,name:musicname,src:src,musicImgSrc:musicImgSrc});
-    		    		              _this.$store.commit('newaudio',{index:currentIndex,src:src});
-    		   		              _this.$store.commit('play',true);
-		   		              _this.$store.commit('playImgSrc','stopImgSrc');
-    			         }
-    		          }).catch(function(response){
-    			               console.log(response)
-    			      });
-    		     },2000)
-    		}
+      	  // 播放请求
+    		  this.axios(config).then(function(response){
+    			  if(_this.audio.index===currentIndex){// 超过2s点击判断是否为最后一次请求
+    				  src=response.data.data[0].url;
+    		      _this.$store.commit('delmusicData',currentIndex);
+    		      _this.$store.commit('addmusicData',{id:musicID,name:musicname,src:src,musicImgSrc:musicImgSrc});
+    		      _this.$store.commit('newaudio',{index:currentIndex,src:src});
+    		   	  _this.$store.commit('play',true);
+		   		    _this.$store.commit('playImgSrc','stopImgSrc');
+    			  }
+    		  }).catch(function(response){
+    			  console.log(response)
+    			});
+    		},2000)
+    	}
     },
 
     // 清除musicName
@@ -361,61 +364,60 @@ export default {
       this.musicHistoryData.splice(index,1);
     },
 
-  //判断是否存在歌曲
-  isExist(id){
-    for(var i=0;i<this.musicData.length;i++){
-          if(this.musicData[i].id==id){
-            return i;
-          }
+    //判断是否存在歌曲
+    isExist(id){
+      for(var i=0;i<this.musicData.length;i++){
+        if(this.musicData[i].id==id){
+          return i;
         }
-        return false;
-  },
-
-  // 判断是否存在搜索历史
-  isExistHistory(musicName){
-    for(var i=0;i<this.musicHistoryData.length;i++){
-      if(this.musicHistoryData[i]===musicName){
-        return true;
       }
-    }
-    return false;
-  },
+      return false;
+    },
 
-  //加载更多
-  loadBottom(){
-  	var config={
-    		method: 'post',
-            	url: '/api/find-music',
-            	data: {
-            	musicName:this.musicName,
-            	offset:this.pageNo*20
-            	}
+    // 判断是否存在搜索历史
+    isExistHistory(musicName){
+      for(var i=0;i<this.musicHistoryData.length;i++){
+        if(this.musicHistoryData[i]===musicName){
+          return true;
         }
-    	var _this=this;
-  	this.pageNo+=1;//每次页数递增1
-  	if(this.pageNo==this.totalCount){
-  		this.allLoaded=true;//当allLoaded为true时，上拉加载停止
-  		this.bottomText="没有更多的数据了"
-  	}
+      }
+      return false;
+    },
 
-  	// 2s后才做请求，以免数据显示过快loading图标一闪而过，体验不好
-  	setTimeout(()=>{
-    	if(this.musicName){
+    //加载更多
+    loadBottom(){
+  	  var config={
+    		method: 'post',
+        url: '/api/find-music',
+        data: {
+          musicName:this.musicName,
+          offset:this.pageNo*20
+        }
+      }
+    	var _this=this;
+  	  this.pageNo+=1;//每次页数递增1
+  	  if(this.pageNo==this.totalCount){
+  		  this.allLoaded=true;//当allLoaded为true时，上拉加载停止
+  		  this.bottomText="没有更多的数据了"
+  	  }
+
+  	  // 2s后才做请求，以免数据显示过快loading图标一闪而过，体验不好
+  	  setTimeout(()=>{
+    	  if(this.musicName){
   	      this.axios(config).then(function(response){
   		      _this.musicFindData=_this.musicFindData.concat(response.data.result.songs);
   		      _this.$refs.loadmore.onBottomLoaded();
   	      }).catch(function(response) {
-  	      	  _this.$refs.loadmore.onBottomLoaded();
-              console.log(response);
+  	      	_this.$refs.loadmore.onBottomLoaded();
+            console.log(response);
           });
         }
-  	},2000);
-  },
-  handleBottomChange(status){
-  	this.bottomStatus=status;
+  	  },2000);
+    },
+    handleBottomChange(status){
+  	  this.bottomStatus=status;
+    }
   }
-}
-
 }
 </script>
 
@@ -441,8 +443,8 @@ export default {
 		}
 		.findContent{
 			flex:7;
-              display:flex;
-              align-items:center;
+      display:flex;
+      align-items:center;
 			input{
 				width:95%;
 				height:30px;
@@ -504,8 +506,8 @@ export default {
 				margin-left:10px;
 				flex:1;
 				white-space:nowrap;
-      				overflow:hidden;
-      				text-overflow:ellipsis;//文字超出部分省略号显示
+      	overflow:hidden;
+      	text-overflow:ellipsis;//文字超出部分省略号显示
 				// overflow: hidden;
 			}
 			span{
@@ -515,13 +517,13 @@ export default {
 	}
 	.musicHotHistory{
 		width:100%;
-        flex:1;
-        display:flex;
-        flex-direction:column;
-        .musicHot{
-          width:100%;
-          flex:1;
-        }
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    .musicHot{
+      width:100%;
+      flex:1;
+    }
 		.title{
 			height:20px;
 			line-height:20px;
@@ -540,39 +542,39 @@ export default {
 			background-color:#fafafa;
 			// color:#515151;
 		}
-          .musicHistory{
-            margin-top: 20px;
-            width:100%;
-            flex:3;
-            .musicHistoryList{
-              width:100%;
-              height:30px;
-              display:flex;
-              align-items:center;
-              margin: 10px 0;
-              span{
-                display:inline-block;
-              }
-              .history-icon{
-                width:20px;
-                height:20px;
-                margin-left: 10px;
-                background: url('../assets/icon/history1.svg') no-repeat center center;background-size: contain;
-              }
-              .historyName{
-                line-height:30px;
-                flex:1;
-                padding-left: 10px;
-                border-bottom: 1px solid rgba(0,0,0,0.1);
-              }
-              .historyRemove{
-                width:20px;
-                height:20px;
-                margin-right: 10px;
-                background: url('../assets/icon/close.png') no-repeat center center;background-size: contain;
-              }
-            }
-          }
+    .musicHistory{
+      margin-top: 20px;
+      width:100%;
+      flex:3;
+      .musicHistoryList{
+        width:100%;
+        height:30px;
+        display:flex;
+        align-items:center;
+        margin: 10px 0;
+        span{
+          display:inline-block;
+        }
+        .history-icon{
+          width:20px;
+          height:20px;
+          margin-left: 10px;
+          background: url('../assets/icon/history1.svg') no-repeat center center;background-size: contain;
+        }
+        .historyName{
+          line-height:30px;
+          flex:1;
+          padding-left: 10px;
+          border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+        .historyRemove{
+          width:20px;
+          height:20px;
+          margin-right: 10px;
+          background: url('../assets/icon/close.png') no-repeat center center;background-size: contain;
+        }
+      }
+    }
 	}
 	.loading{
 		flex:1;
@@ -580,7 +582,7 @@ export default {
 		// background-color:#e6e6e6;
 		display:flex;
 		justify-content: center;
-        		align-items: center;
+    align-items: center;
 		.mt-spinner{
 			width:50px;
 			height:50px;
@@ -598,23 +600,23 @@ export default {
 			display:flex;
 			span{
 				height:70px;
-        	                            display: inline-block;
-        	                            vertical-align: top;
-                            }
-                           .music-index{
-        				width:30px;
-        				line-height: 70px;
-        				text-align: center;
-            		}
-            		.musicName{
-            			display:flex;
-            			flex-direction:column;
-            			flex:7;
-            			line-height:35px;
-            			padding-left: 10px;
-            			font-size: 18px;
-            			cursor:pointer;
-            			-webkit-tap-highlight-color: rgba(0,0,0,0);
+        display: inline-block;
+        vertical-align: top;
+      }
+      .music-index{
+        width:30px;
+        line-height: 70px;
+        text-align: center;
+      }
+      .musicName{
+        display:flex;
+        flex-direction:column;
+        flex:7;
+        line-height:35px;
+        padding-left: 10px;
+        font-size: 18px;
+        cursor:pointer;
+        -webkit-tap-highlight-color: rgba(0,0,0,0);
 				-webkit-tap-highlight-color: transparent;
 				.music-name{
 					flex:1;
@@ -623,7 +625,7 @@ export default {
 					flex:1;
 					font-size: 12px;
 				}
-            		}
+      }
 		}
 		.music-list:active{
 			background-color: #cdcdcd;

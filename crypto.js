@@ -6,23 +6,23 @@ const nonce = '0CoJUm6Qyw8W8jud'
 const pubKey = '010001'
 
 String.prototype.hexEncode = function(){
-    var hex, i;
+  var hex, i;
 
-    var result = "";
-    for (i=0; i<this.length; i++) {
-        hex = this.charCodeAt(i).toString(16);
-        result += (""+hex).slice(-4);
-    }
-    return result
+  var result = "";
+  for (i=0; i<this.length; i++) {
+    hex = this.charCodeAt(i).toString(16);
+    result += (""+hex).slice(-4);
+  }
+  return result
 }
 
 function createSecretKey(size) {
   var keys = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   var key = "";
   for (var i = 0; i < size; i++) {
-      var pos = Math.random() * keys.length;
-      pos = Math.floor(pos);
-      key = key + keys.charAt(pos)
+    var pos = Math.random() * keys.length;
+    pos = Math.floor(pos);
+    key = key + keys.charAt(pos)
   }
   return key;
 }
@@ -38,8 +38,8 @@ function aesEncrypt(text, secKey) {
 }
 
 function zfill(str, size) {
-    while (str.length < size) str = "0" + str;
-    return str;
+  while (str.length < size) str = "0" + str;
+  return str;
 }
 
 function rsaEncrypt(text, pubKey, modulus) {

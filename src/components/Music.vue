@@ -20,7 +20,7 @@
   	  </li>
   	  <li>
   		<span class="nav-button"><i class="songlist-icon"></i></span>
-  		<span>{{recommend.songlist}}</span>
+  		<span>{{recommend.allsonglist}}</span>
   	  </li>
   	  <li>
   		<span class="nav-button"><i class="toplist-icon"></i></span>
@@ -35,7 +35,7 @@
   		<span class="title-icon"></span>
   	  </div>
   	  <ul class="songlist">
-  	  	<li class="songlist-item" v-for="song in songlist">
+  	  	<li class="songlist-item" v-for="(song,index) in songlist" @click="songlistDetail(index)">
   	  	  <img v-lazy="song.picUrl">
   	  	  <span>{{song.name}}</span>
   	  	</li>
@@ -63,7 +63,7 @@
   		<span class="title-icon"></span>
   	  </div>
   	  <ul class="newsong">
-  	  	<li class="newsong-item" v-for="song in newsong">
+  	  	<li class="newsong-item" v-for="(song,index) in newsong" @click="playMusic(index)">
   	  	  <img v-lazy="song.song.album.blurPicUrl">
   	  	  <div class="name">
   	  	  	<span class="music-name">{{song.song.name}}</span>
@@ -143,6 +143,7 @@ export default {
       	FM:'私人FM',
       	everyday:'每日推荐',
       	songlist:'推荐歌单',
+      	allsonglist:'歌单',
       	toplist:'排行榜',
       	private:'独家放送',
       	MV:'推荐MV',
@@ -150,7 +151,8 @@ export default {
       	radio:'主播电台',
       	program:'精选专栏'
       },
-      date:''
+      date:'',
+      continueClick:null
       // show:'功能未完成'
     }
   },
@@ -192,6 +194,20 @@ export default {
     recommendRadio(){
       return this.$store.state.recommendRadio;
     },
+    musicData(){
+      return this.$store.state.musicData;
+    },
+    audio(){
+      return this.$store.state.audio;
+    }
+  },
+  watch:{
+    musicData:{
+      handler(val,oldval){
+        localStorage.music = JSON.stringify(val);
+      },
+      deep:true
+    }
   },
   mounted(){
   	var mySwiper=document.getElementById('mySwiper');
@@ -212,6 +228,107 @@ export default {
       e.stopPropagation();
       _this.mySwiper.startAutoplay();
     },false)
+  },
+  methods:{
+  	playMusic(index){
+  	  var _this=this;
+  	  var musicID=this.newsong[index].song.id;
+  	  var config={
+        method: 'post',
+        url: '/api/play-music',
+        data: {
+          musicID:musicID
+        }
+      }
+      var musicImgSrc=this.newsong[index].song.album.picUrl;
+      var musicname=this.newsong[index].song.artists[0].name+" - "+this.newsong[index].song.name;
+      var currentIndex="";
+
+      var cp=this.newsong[index].song.privilege.cp;//1
+      var sp=this.newsong[index].song.privilege.sp;//7
+      var subp=this.newsong[index].song.privilege.subp;//1
+      if(cp===0&&sp===0&&subp===0){
+        this.$toast('暂无歌曲资源,请选择其他歌曲');
+        return;
+      }
+
+      // 检测musicData是否存在播放歌曲，有则播放该歌曲，无则增加歌曲并播放
+      if(this.isExist(musicID)){
+      	currentIndex=this.isExist(musicID);
+
+      	// 判断是否点击为正在播放首歌
+      	if(this.audio.index===currentIndex){
+          if(this.audio.audioDom.paused){
+            this.audio.audioDom.play();
+          }
+          return;
+        }
+
+        this.$store.commit('newaudio',{index:currentIndex,src:''});
+
+        // 判断连续点击，2s内连续点击只做最后一次请求
+        if(this.continueClick!=null){
+          clearTimeout(this.continueClick);
+        }
+        this.continueClick=setTimeout(()=>{
+          // 播放请求
+          this.axios(config).then(function(response){
+            if(_this.audio.index===currentIndex){// 超过2s点击判断是否为最后一次请求
+              var src=response.data.data[0].url;
+              _this.$store.commit('newaudio',{index:currentIndex,src:src});
+              _this.$store.commit('play',true);
+              _this.$store.commit('playImgSrc','stopImgSrc');
+            }
+          }).catch(function(error){
+            console.log(error)
+          })
+        },2000);
+      }else{
+      	this.$store.commit('addmusicData',{id:musicID,name:musicname,src:'',musicImgSrc:musicImgSrc});
+        currentIndex=this.musicData.length-1;
+        this.$store.commit('newaudio',{index:currentIndex,src:''});
+
+        // 判断连续点击，2s内连续点击只做最后一次请求
+        if(this.continueClick!=null){
+          clearTimeout(this.continueClick);
+        }
+        this.continueClick=setTimeout(()=>{
+          // 播放请求
+          this.axios(config).then(function(response){
+            if(_this.audio.index===currentIndex){// 超过2s点击判断是否为最后一次请求
+              var src=response.data.data[0].url;
+              _this.$store.commit('delmusicData',currentIndex);
+              _this.$store.commit('addmusicData',{id:musicID,name:musicname,src:src,musicImgSrc:musicImgSrc});
+              _this.$store.commit('newaudio',{index:currentIndex,src:src});
+              _this.$store.commit('play',true);
+              _this.$store.commit('playImgSrc','stopImgSrc');
+            }
+          }).catch(function(error){
+            console.log(error)
+          })
+        },2000)
+      }
+  	},
+
+  	// 歌单详情
+  	songlistDetail(index){
+  	  var songlistID=this.songlist[index].id;
+  	  var songlistRecommend=this.songlist[index].copywriter;
+  	  this.$store.dispatch('songlsitDetail',songlistID);
+  	  this.$store.commit('songlistRecommend',songlistRecommend);
+  	  this.$store.commit('isShowHeader',false);
+  	  this.$store.commit('isShowSonglistDetail',true);
+  	},
+
+  	//判断是否存在歌曲
+    isExist(id){
+      for(var i=0;i<this.musicData.length;i++){
+        if(this.musicData[i].id==id){
+          return i;
+        }
+      }
+      return false;
+    },
   }
 }
 </script>
@@ -405,6 +522,9 @@ export default {
   	  	  }
   	  	}
   	  }
+  	  li:active{
+  	  	background-color: #e6e6e6;
+  	  }
   	}
   	.recommend-MV{
   	  width:100%;
@@ -457,11 +577,11 @@ export default {
   	  	    wdith:100%;
   	  	    padding:10px 10px 0 10px;
   	  	    display:inline-block;
-  	  	    line-height: 15px;
+  	  	    line-height: 16px;
   	  	    font-size: 12px;
   	  	  }
   	  	  .program-title{
-  	  	  	font-size: 16px;
+  	  	  	font-size: 15px;
   	  	  }
   	  	  .program-readCount{
   	  	  	color:#999;
