@@ -274,10 +274,11 @@ export default {
         justify-content:center;
         span{
           flex:1;
-          display:inline-block;
+          // display:inline-block;
           line-height:20px;
         }
         .top-name{
+          padding-top:5px;
           font-size: 16px;
         }
         .songlistRecommend{
@@ -306,7 +307,7 @@ export default {
         display:flex;
         flex-direction:column;
         padding-left:10px;
-        padding-top:10%;
+        padding-top:5%;
         flex-wrap:wrap;
         li{
           width:90%;
@@ -404,15 +405,19 @@ export default {
           flex:6;
           display:flex;
           flex-direction:column;
+          overflow:hidden;
           span{
             flex:1;
+            width:97%;
             line-height:20px;
-          }
-          .musicName{
-            font-size: 16px;
+            overflow:hidden;
+            white-space:nowrap;
             text-overflow:ellipsis;//文字超出部分省略号显示
             -webkit-tap-highlight-color: rgba(0,0,0,0);
             -webkit-tap-highlight-color: transparent;
+          }
+          .musicName{
+            font-size: 16px;
           }
           .arName{
             font-size: 12px;
