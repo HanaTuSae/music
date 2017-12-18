@@ -13,12 +13,14 @@ const store = new Vuex.Store({
     isLoading:false,
     isShowLyric:false,
     isShowSonglistDetail:false,
+    isShowToplistSort:false,
+    isShowAllSongList:false,
+    isShowToplist:false,
     isLoadingLyric:false,
     isShowMaskLayer:false,
     isShowMusicList:false,
     playing:false,
 	musicData:[],
-	hotTopData:[],
 	lyricData:[],
 	searchHot:[],
 	banners:[],
@@ -29,6 +31,28 @@ const store = new Vuex.Store({
 	recommendProgram:[],
 	recommendRadio:[],
 	songlistDetail:{
+	  playlist:{
+	  	coverImgUrl:'',
+	  	tracks:[{
+	  	  name:'',
+	  	  ar:[{
+	  	  	name:'',
+	  	  }],
+	  	}],
+	  	name:'',
+	  	creator:{
+	  	  avatarUrl:'',
+	  	  nickname:'',
+	  	},
+	  	subscribedCount:'',
+	  	commentCount:'',
+	  	shareCount:'',
+	  	trackCount:0
+	  },
+	},
+	allSongList:{},
+	toplistSort:[],
+	topList:{
 	  playlist:{
 	  	coverImgUrl:'',
 	  	tracks:[{
@@ -73,6 +97,15 @@ const store = new Vuex.Store({
 	},
 	isShowSonglistDetail(state,msg){
 	  state.isShowSonglistDetail=msg;
+	},
+	isShowToplistSort(state,msg){
+	  state.isShowToplistSort=msg;
+	},
+	isShowAllSongList(state,msg){
+	  state.isShowAllSongList=msg;
+	},
+	isShowToplist(state,msg){
+	  state.isShowToplist=msg;
 	},
 	isShowHeader(state,msg){
 	  state.isShowHeader=msg;
@@ -134,12 +167,20 @@ const store = new Vuex.Store({
 	//获取排行榜，传入排行榜对应id获取
 	topList(context,id){
 	  Vue.axios.get('/api/toplist',{params:{id:id}}).then(function(response) {
-		context.state.isLoading=false;
-        context.state.hotTopData = response.data.result.tracks;
+		// context.state.isLoading=false;
+        context.state.topList = response.data;
       }).catch(function(response) {
-    	context.state.isLoading=false;
+    	// context.state.isLoading=false;
         console.log(response)
       });
+	},
+	// 排行榜分类
+	toplistSort(context){
+		Vue.axios.get('/api/top-list').then(function(response){
+		  context.state.toplistSort=response.data.list;
+		}).catch(function(error){
+		  console.log(error);
+		})
 	},
 	//获取歌词
 	lyric(context,currentMusic){
@@ -178,6 +219,15 @@ const store = new Vuex.Store({
 	songlist(context){
 	  Vue.axios.get('/api/recommend-songList').then(function(response){
 		context.state.songlist=response.data.result;
+	  }).catch(function(error){
+		console.log(error);
+	  })
+	},
+	// 全部歌单
+	allSonglist(context){
+	  Vue.axios.get('/api/allSongList').then(function(response){
+		// context.state.allSonglist=response.data.result;
+		console.log(response.data);
 	  }).catch(function(error){
 		console.log(error);
 	  })

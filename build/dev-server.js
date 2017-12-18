@@ -45,7 +45,6 @@ function randomUserAgent() {
     'Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_2 like Mac OS X) AppleWebKit/603.2.4 (KHTML, like Gecko) Mobile/14F89;GameHelper',
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/603.2.4 (KHTML, like Gecko) Version/10.1.1 Safari/603.2.4',
     'Mozilla/5.0 (iPhone; CPU iPhone OS 10_0 like Mac OS X) AppleWebKit/602.1.38 (KHTML, like Gecko) Version/10.0 Mobile/14A300 Safari/602.1',
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36',
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:46.0) Gecko/20100101 Firefox/46.0',
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:46.0) Gecko/20100101 Firefox/46.0',
     'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0)',
@@ -54,7 +53,8 @@ function randomUserAgent() {
     'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Win64; x64; Trident/6.0)',
     'Mozilla/5.0 (Windows NT 6.3; Win64, x64; Trident/7.0; rv:11.0) like Gecko',
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/13.10586',
-    'Mozilla/5.0 (iPad; CPU OS 10_0 like Mac OS X) AppleWebKit/602.1.38 (KHTML, like Gecko) Version/10.0 Mobile/14A300 Safari/602.1'
+    'Mozilla/5.0 (iPad; CPU OS 10_0 like Mac OS X) AppleWebKit/602.1.38 (KHTML, like Gecko) Version/10.0 Mobile/14A300 Safari/602.1',
+    'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.89 Safari/537.36'
   ]
   const num = Math.floor(Math.random() * userAgentList.length)
   return userAgentList[num]
@@ -156,6 +156,7 @@ apiRoutes.get('/music-data', function (req, res) {
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
 //搜索音乐
 apiRoutes.post('/find-music',function(req,res){
   var keywords = req.body.musicName || '';
@@ -200,36 +201,50 @@ apiRoutes.post('/play-music',function(req,res){
 //排行榜
 apiRoutes.get('/toplist',function(req,res){
   var top_list_all = {
-  '0': ['云音乐新歌榜', '/api/playlist/detail?id=3779629'],
-  '1': ['云音乐热歌榜', '/api/playlist/detail?id=3778678'],
-  '2': ['网易原创歌曲榜', '/api/playlist/detail?id=2884035'],
-  '3': ['云音乐飙升榜', '/api/playlist/detail?id=19723756'],
-  '4': ['云音乐电音榜', '/api/playlist/detail?id=10520166'],
-  '5': ['UK排行榜周榜', '/api/playlist/detail?id=180106'],
-  '6': ['美国Billboard周榜', '/api/playlist/detail?id=60198'],
-  '7': ['KTV嗨榜', '/api/playlist/detail?id=21845217'],
-  '8': ['iTunes榜', '/api/playlist/detail?id=11641012'],
-  '9': ['Hit FM Top榜', '/api/playlist/detail?id=120001'],
-  '10': ['日本Oricon周榜', '/api/playlist/detail?id=60131'],
-  '11': ['韩国Melon排行榜周榜', '/api/playlist/detail?id=3733003'],
-  '12': ['韩国Mnet排行榜周榜', '/api/playlist/detail?id=60255'],
-  '13': ['韩国Melon原声周榜', '/api/playlist/detail?id=46772709'],
-  '14': ['中国TOP排行榜(港台榜)', '/api/playlist/detail?id=112504'],
-  '15': ['中国TOP排行榜(内地榜)', '/api/playlist/detail?id=64016'],
-  '16': ['香港电台中文歌曲龙虎榜', '/api/playlist/detail?id=10169002'],
-  '17': ['华语金曲榜', '/api/playlist/detail?id=4395559'],
-  '18': ['中国嘻哈榜', '/api/playlist/detail?id=1899724'],
-  '19': ['法国 NRJ EuroHot 30周榜', '/api/playlist/detail?id=27135204'],
-  '20': ['台湾Hito排行榜', '/api/playlist/detail?id=112463'],
-  '21': ['Beatport全球电子舞曲榜', '/api/playlist/detail?id=3812895']
+    '0': ['云音乐飙升榜', '/api/playlist/detail?id=19723756'],
+    '1': ['云音乐新歌榜', '/api/playlist/detail?id=3779629'],
+    '2': ['网易原创歌曲榜', '/api/playlist/detail?id=2884035'],
+    '3': ['云音乐热歌榜', '/api/playlist/detail?id=3778678'],
+
+    '4': ['云音乐电音榜', '/api/playlist/detail?id=1978921795'],
+    '5': ['云音乐嘻哈榜', '/api/playlist/detail?id=991319590'],//
+    '6': ['云音乐新电力榜', '/api/playlist/detail?id=10520166'],//
+    '7': ['云音乐ACG音乐榜', '/api/playlist/detail?id=71385702'],//
+    '8': ['云音乐古典音乐榜', '/api/playlist/detail?id=71384707'],//
+    '9': ['UK排行榜周榜', '/api/playlist/detail?id=180106'],
+    '10': ['美国Billboard周榜', '/api/playlist/detail?id=60198'],
+    '11': ['Beatport全球电子舞曲榜', '/api/playlist/detail?id=3812895'],
+    '12': ['法国 NRJ EuroHot 30周榜', '/api/playlist/detail?id=27135204'],
+    '13': ['KTV唛榜', '/api/playlist/detail?id=21845217'],
+    '14': ['iTunes榜', '/api/playlist/detail?id=11641012'],
+    '15': ['日本Oricon周榜', '/api/playlist/detail?id=60131'],
+    '16': ['Hit FM Top榜', '/api/playlist/detail?id=120001'],
+    '17': ['台湾Hito排行榜', '/api/playlist/detail?id=112463'],
+    '18': ['中国TOP排行榜(港台榜)', '/api/playlist/detail?id=112504'],
+    '19': ['中国TOP排行榜(内地榜)', '/api/playlist/detail?id=64016'],
+    '20': ['香港电台中文歌曲龙虎榜', '/api/playlist/detail?id=10169002'],
+    '21': ['中国嘻哈榜', '/api/playlist/detail?id=1899724']
   }
-  var id=req.query.id;
-  // var cookie = req.get('Cookie') ? req.get('Cookie') : (req.body.cookie ? req.body.cookie : '');
-  createRequest(top_list_all[id][1],'GET', {}, function(response) {
-    res.setHeader("Content-Type", "application/json");
-    res.send(response);
-  });
+  var cookie = req.get('Cookie') ? req.get('Cookie') : (req.query.cookie ? req.query.cookie : '');
+  var data={
+    'id':req.query.id,
+    'limit': req.query.limit || 30,
+    'offset': req.query.offset || 0,
+    'total': true,
+    'n': 1000,
+    'csrf_token': ""
+  }
+  createWebAPIRequest('/weapi/v3/playlist/detail', data, cookie, res,'POST');
 });
+
+// 排行榜分类
+apiRoutes.get('/top-list',function(req,res){
+  var cookie = req.get('Cookie') ? req.get('Cookie') : (req.query.cookie ? req.query.cookie : '');
+  var data={
+    'csrf_token': ''
+  };
+  createWebAPIRequest('/weapi/toplist', data, cookie, res,'POST');
+})
 
 //歌词
 apiRoutes.get('/lyric',function(req,res){
@@ -241,12 +256,13 @@ apiRoutes.get('/lyric',function(req,res){
 
 // 搜索热门
 apiRoutes.get('/search-hot',function(req,res){
-  var hotKeywords=['张杰', '赵雷', '李健', '林志炫', '张碧晨',
-                                        '梁博', '周笔畅', '张靓颖', '陈奕迅', '周杰伦',
-                                         '王力宏', 'TFBoys', '李玉刚', '魏晨', '薛之谦',
-                                         '理想三旬','一生所爱','童话镇','Seve','春风十里',
-                                         'Panama','小半','你就不要想起我','谢春花','成都'
-                                      ];
+  var hotKeywords=[
+    '张杰', '赵雷', '李健', '林志炫', '张碧晨',
+    '梁博', '周笔畅', '张靓颖', '陈奕迅', '周杰伦',
+    '王力宏', 'TFBoys', '李玉刚', '魏晨', '薛之谦',
+    '理想三旬','一生所爱','童话镇','Seve','春风十里',
+    'Panama','小半','你就不要想起我','谢春花','成都'
+  ];
   var rHot = new Array(8);
   for (let i = 0; i < rHot.length; i++) {
     let length = hotKeywords.length;
@@ -270,8 +286,27 @@ apiRoutes.get('/banner',function(req,res){
 // 推荐歌单
 apiRoutes.get('/recommend-songList',function(req,res){
   var cookie = req.get('Cookie') ? req.get('Cookie') : (req.query.cookie ? req.query.cookie : '');
-  var data={};
+  var data={
+    'limit': req.query.limit || 6,
+    'offset': req.query.offset || 0,
+    'total': true,
+    'n': 1000,
+    'csrf_token': ""
+  };
   createWebAPIRequest('/weapi/personalized/playlist', data, cookie, res,'POST');
+})
+
+// 全部歌单
+apiRoutes.get('/allSongList',function(req,res){
+  var cookie = req.get('Cookie') ? req.get('Cookie') : (req.query.cookie ? req.query.cookie : '');
+  var data={
+    'cat': req.query.cat || '全部',
+    'order': req.query.order || 'hot',
+    'offset': req.query.offset || 0,
+    'total': req.query.total ? 'true' : 'false',
+    'limit': req.query.limit || 50
+  };
+  createWebAPIRequest('/weapi/playlist/list', data, cookie, res,'POST');
 })
 
 // 歌单详情

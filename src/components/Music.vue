@@ -18,11 +18,11 @@
   		<span class="nav-button"><i class="everyday-icon"><span class="date">{{date}}</span></i></span>
   		<span>{{recommend.everyday}}</span>
   	  </li>
-  	  <li>
+  	  <li @click="allSonglist">
   		<span class="nav-button"><i class="songlist-icon"></i></span>
   		<span>{{recommend.allsonglist}}</span>
   	  </li>
-  	  <li>
+  	  <li @click="toplist">
   		<span class="nav-button"><i class="toplist-icon"></i></span>
   		<span>{{recommend.toplist}}</span>
   	  </li>
@@ -82,7 +82,7 @@
   	  <ul class="recommend-MV">
   	  	<li class="recommendMV-item" v-for="mv in recommendMV">
   	  	  <img v-lazy="mv.picUrl">
-  	  	  <span class="mv-name">{{mv.name}}</span>
+  	  	  <span class="mv-name">{{mv.name.replace(/&nbsp;/g,' ')}}</span>
   	  	  <span class="artists-name">{{mv.artistName}}</span>
   	  	</li>
   	  </ul>
@@ -320,6 +320,19 @@ export default {
   	  this.$store.commit('isShowSonglistDetail',true);
   	},
 
+  	// 全部歌单
+  	allSonglist(){
+  	  this.$store.dispatch('allSonglist');
+  	  this.$store.commit('isShowHeader',false);
+  	  this.$store.commit('isShowAllSongList',true);
+  	},
+  	// 排行榜
+  	toplist(){
+      this.$store.dispatch('toplistSort');
+  	  this.$store.commit('isShowHeader',false);
+  	  this.$store.commit('isShowToplistSort',true);
+  	},
+
   	//判断是否存在歌曲
     isExist(id){
       for(var i=0;i<this.musicData.length;i++){
@@ -444,7 +457,7 @@ export default {
   	  	}
   	  	span{
   	  	  width:90%;
-  	  	  height:30px;
+  	  	  // height:30px;
   	  	  padding:10px 5% 0 5%;
   	  	  display:inline-block;
   	  	  line-height: 15px;
@@ -534,6 +547,7 @@ export default {
   	  li{
   	  	width:49.5%;
   	  	display: flex;
+  	  	flex-wrap:wrap;
   	  	flex-direction:column;
   	  	margin-bottom:10px;
   	  	img,img[lazy=loading]{
@@ -542,18 +556,19 @@ export default {
   	  	  display:inline-block;
   	  	}
   	  	span{
-  	  	  width:90%;
+  	  	  width:95%;
   	  	  // height:30px;
-  	  	  padding:5px 0 0 5px;
   	  	  display:inline-block;
   	  	  line-height: 15px;
   	  	  font-size: 12px;
   	  	}
   	  	.mv-name{
   	  	  font-size: 14px;
+  	  	  padding:10px 2.5% 0 2.5%;
   	  	}
   	  	.artists-name{
   	  	  color:#999;
+  	  	  padding:5px 2.5% 0 2.5%;
   	  	}
   	  }
   	}

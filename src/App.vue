@@ -39,9 +39,21 @@
       <transition :name="isShowList" mode="out-in">
         <songlistDetail v-show="isShowSonglistDetail"></songlistDetail>
       </transition>
+
       <!-- 歌单列表 -->
+      <transition :name="isShowList" mode="out-in">
+        <allSonglist v-show="isShowSonglistDetail"></allSonglist>
+      </transition>
+
       <!-- 排行榜列表 -->
+      <transition :name="isShowList" mode="out-in">
+        <toplistSort v-show="isShowToplistSort"></toplistSort>
+      </transition>
+
       <!-- 排行榜详情 -->
+      <transition :name="isShowList" mode="out-in">
+        <toplist v-show="isShowToplist"></toplist>
+      </transition>
 
       <!-- Mini播放器 -->
       <MFooter></MFooter>
@@ -69,10 +81,13 @@ import MFooter from './components/Footer.vue';
 import Play from './components/Play.vue';
 import PlayMusicList from './components/PlayMusicList.vue';
 import songlistDetail from './components/songlistDetail.vue';
+import toplistSort from './components/toplistSort.vue';
+import toplist from './components/toplist.vue';
+import allSonglist from './components/allSonglist.vue';
 
 export default {
   name: 'app',
-  components: { MHeader,MMenu,MFooter,Play,Find,PlayMusicList,songlistDetail},
+  components: { MHeader,MMenu,MFooter,Play,Find,PlayMusicList,songlistDetail,toplistSort,toplist,allSonglist},
   data(){
     return {
       isShowList:'isShowFind',
@@ -120,6 +135,12 @@ export default {
     },
     isShowSonglistDetail(){
       return this.$store.state.isShowSonglistDetail;
+    },
+    isShowToplistSort(){
+      return this.$store.state.isShowToplistSort;
+    },
+    isShowToplist(){
+      return this.$store.state.isShowToplist;
     }
   },
   watch:{

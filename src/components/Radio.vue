@@ -1,5 +1,6 @@
 <template>
 	<div class="radio">
+    {{show}}
 	</div>
 </template>
 
@@ -8,7 +9,7 @@ export default {
   name: 'radio',
   data () {
     return {
-      // show:'功能未完成'
+      show:'功能未完成'
     }
   }
 }
