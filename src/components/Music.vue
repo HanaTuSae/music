@@ -314,7 +314,7 @@ export default {
   	songlistDetail(index){
   	  var songlistID=this.songlist[index].id;
   	  var songlistRecommend=this.songlist[index].copywriter;
-  	  this.$store.dispatch('songlsitDetail',songlistID);
+  	  this.$store.dispatch('songlistDetail',songlistID);
   	  this.$store.commit('songlistRecommend',songlistRecommend);
   	  this.$store.commit('isShowHeader',false);
   	  this.$store.commit('isShowSonglistDetail',true);

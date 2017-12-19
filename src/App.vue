@@ -42,7 +42,7 @@
 
       <!-- 歌单列表 -->
       <transition :name="isShowList" mode="out-in">
-        <allSonglist v-show="isShowSonglistDetail"></allSonglist>
+        <allSonglist v-show="isShowAllSongList"></allSonglist>
       </transition>
 
       <!-- 排行榜列表 -->
@@ -141,6 +141,9 @@ export default {
     },
     isShowToplist(){
       return this.$store.state.isShowToplist;
+    },
+    isShowAllSongList(){
+      return this.$store.state.isShowAllSongList;
     }
   },
   watch:{

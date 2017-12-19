@@ -112,9 +112,29 @@ export default {
   },
   methods:{
     close(){
+      var topList={
+        playlist:{
+          coverImgUrl:'',
+          tracks:[{
+            name:'',
+            ar:[{
+              name:'',
+            }],
+          }],
+          name:'',
+          creator:{
+            avatarUrl:'',
+            nickname:'',
+          },
+          subscribedCount:'',
+          commentCount:'',
+          shareCount:'',
+          trackCount:0
+        },
+      }
       this.$store.commit('isShowToplistSort',true);
       this.$store.commit('isShowToplist',false);
-      this.topList='';
+      this.$store.commit('topList',topList);
     },
     playMusic(index){
       var _this=this;

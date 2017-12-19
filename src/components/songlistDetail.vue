@@ -105,6 +105,9 @@ export default {
     },
     musicData(){
       return this.$store.state.musicData;
+    },
+    allSonglistFlag(){
+      return this.$store.state.allSonglistFlag;
     }
   },
   watch:{
@@ -120,9 +123,36 @@ export default {
   },
   methods:{
     close(){
-      this.$store.commit('isShowHeader',true);
+      var songlistDetail={
+        playlist:{
+          coverImgUrl:'',
+          tracks:[{
+            name:'',
+            ar:[{
+              name:'',
+            }],
+          }],
+          name:'',
+          creator:{
+            avatarUrl:'',
+            nickname:'',
+          },
+          subscribedCount:'',
+          commentCount:'',
+          shareCount:'',
+          trackCount:0
+        },
+      }
+      if(this.allSonglistFlag){
+        this.$store.commit('isShowAllSongList',true);
+      }else{
+        this.$store.commit('isShowHeader',true);
+        this.$store.commit('songlistRecommend','');
+      }
       this.$store.commit('isShowSonglistDetail',false);
-      this.songlistDetail='';
+      this.$store.commit('allSonglistFlag',false);
+      this.$store.commit('songlistDetail',songlistDetail);
+      // this.songlistDetail='';
     },
     playMusic(index){
       var _this=this;

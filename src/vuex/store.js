@@ -50,7 +50,7 @@ const store = new Vuex.Store({
 	  	trackCount:0
 	  },
 	},
-	allSongList:{},
+	allSonglist:[],
 	toplistSort:[],
 	topList:{
 	  playlist:{
@@ -74,6 +74,7 @@ const store = new Vuex.Store({
 	},
 	songlistRecommend:'',
 	orderFlag:1,
+	allSonglistFlag:false,
 	audio:{
 	  index:-1,
 	  src:"",
@@ -148,6 +149,15 @@ const store = new Vuex.Store({
 	},
 	songlistRecommend(state,msg){
 	  state.songlistRecommend=msg;
+	},
+	songlistDetail(state,msg){
+	  state.songlistDetail=msg;
+	},
+	topList(state,msg){
+	  state.topList=msg;
+	},
+	allSonglistFlag(state,msg){
+	  state.allSonglistFlag=msg;
 	}
   },
   actions:{
@@ -226,8 +236,8 @@ const store = new Vuex.Store({
 	// 全部歌单
 	allSonglist(context){
 	  Vue.axios.get('/api/allSongList').then(function(response){
-		// context.state.allSonglist=response.data.result;
-		console.log(response.data);
+		context.state.allSonglist=response.data.playlists;
+		// console.log(response.data);
 	  }).catch(function(error){
 		console.log(error);
 	  })
@@ -274,7 +284,7 @@ const store = new Vuex.Store({
 	  })
 	},
 	// 获取歌单详情
-	songlsitDetail(context,songlistID){
+	songlistDetail(context,songlistID){
 	  var config={
         method: 'get',
         url: '/api//songList-detail',
@@ -284,7 +294,7 @@ const store = new Vuex.Store({
       }
 	  Vue.axios(config).then(function(response){
 		context.state.songlistDetail=response.data;
-		console.log(response.data);
+		// console.log(response.data);
 	  }).catch(function(error){
 		console.log(error);
 	  })
