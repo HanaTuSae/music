@@ -355,6 +355,9 @@ export default {
   width:100%;
   // height:100%;
   background-color:#fafafa;
+  position: absolute;
+  top:0;
+  left:0;
   .banner{
     height:150px;
     width:100%;

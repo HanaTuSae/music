@@ -148,7 +148,7 @@ export default {
   },
   watch:{
     '$route'(to,from){
-      var routerList=['/','/musiclist','/recommend','/read'];
+      var routerList=['/','/musiclist','/recommend','/recommend/music','/recommend/video','/recommend/radio','/read'];
       var toPathIndex=routerList.indexOf(to.path);
       var fromPathIndex=routerList.indexOf(from.path);
       if(toPathIndex>-1&&fromPathIndex>-1){
@@ -255,7 +255,7 @@ export default {
           if(routerPath==='/recommend'){
             this.$router.push('/musiclist');
           }else if(routerPath==='/read'){
-            this.$router.push('/recommend');
+            this.$router.push('/recommend/radio');
           }
         }else if(Math.abs(X) > Math.abs(Y) && X < -100){//向左滑动
           if(routerPath==='/recommend'){

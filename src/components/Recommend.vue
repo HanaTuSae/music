@@ -8,9 +8,11 @@
     <router-link to="/recommend/radio" class="nav-menu">{{recommend.radio}}</router-link>
   </div>
   <div class="recommend-content">
-    <keep-alive>
-      <router-view ></router-view>
-    </keep-alive>
+    <transition :name="isShowRouter">
+      <keep-alive>
+        <router-view ></router-view>
+      </keep-alive>
+    </transition>
   </div>
 </div>
 </template>
@@ -24,7 +26,8 @@ export default {
         music:'音乐',
         video:'视频',
         radio:'电台'
-      }
+      },
+      isShowRouter:''
     }
   },
   created(){
@@ -34,9 +37,65 @@ export default {
       return this.$route.path;
     }
   },
+  watch:{
+    '$route'(to,from){
+      var routerList=['/recommend','/recommend/music','/recommend/video','/recommend/radio'];
+      var toPathIndex=routerList.indexOf(to.path);
+      var fromPathIndex=routerList.indexOf(from.path);
+      if(toPathIndex>-1&&fromPathIndex>-1){
+        toPathIndex<fromPathIndex?this.isShowRouter='isShowRouterRight':this.isShowRouter='isShowRouterLeft';
+      }
+    }
+  },
   mounted() {
+    var _this=this;
+    this.routerView=document.getElementsByClassName('recommend-content')[0];
+    this.routerView.addEventListener('touchstart',_this.touchStart,false);
+    this.routerView.addEventListener('touchmove',_this.touchMove,false);
+    this.routerView.addEventListener('touchend',_this.touchEnd,false);
   },
   methods:{
+    touchStart(ev){
+      var e=ev || window.event;
+      // e.preventDefault();
+      e.stopPropagation();
+      this.startX=e.changedTouches[0].pageX;
+      this.startY=e.changedTouches[0].pageY;
+    },
+    touchMove(ev){
+      var e=ev || window.event;
+      // e.preventDefault();
+      e.stopPropagation();
+      this.moveEndX=e.changedTouches[0].pageX;
+      this.moveEndY=e.changedTouches[0].pageY;
+    },
+    touchEnd(ev){
+      var e=ev || window.event;
+      e.stopPropagation();
+      if(this.moveEndX){
+        var X=this.moveEndX-this.startX;
+        var Y=this.moveEndY-this.startY;
+        var routerPath=this.$route.path;
+        if ( Math.abs(X) > Math.abs(Y) && X > 100){//向右滑动
+          if(routerPath==='/recommend/video'){
+            this.$router.push('/recommend/music');
+          }else if(routerPath==='/recommend/radio'){
+            this.$router.push('/recommend/video');
+          }else if(routerPath==='/recommend/music'){
+            this.$router.push('/musiclist');
+          }
+        }else if(Math.abs(X) > Math.abs(Y) && X < -100){//向左滑动
+          if(routerPath==='/recommend/video'){
+            this.$router.push('/recommend/radio');
+          }else if(routerPath==='/recommend/music'||routerPath==='/recommend'){
+            this.$router.push('/recommend/video');
+          }else if(routerPath==='/recommend/radio'){
+            this.$router.push('/read');
+          }
+        }
+      }
+      this.moveEndX=null;
+    }
   }
 }
 </script>
@@ -74,59 +133,25 @@ export default {
   }
   .recommend-content{
     flex:1;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display:flex;
+    position: relative;
   }
 }
-// .loading{
-//     flex:1;
-//     overflow: auto;
-//     display:flex;
-//     justify-content: center;
-//         align-items: center;
-//     .mt-spinner{
-//       width:50px;
-//       height:50px;
-//     }
-//   }
-// .musiclist-main{
-//   flex:1;
-//   overflow: auto;
-//   .music-list:active{
-//     background-color: #e6e6e6;
-//   }
-//   .music-list{
-//     width:100%;
-//     height:70px;
-//     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-//     display:flex;
-//     .music-img,img[lazy=loading]{
-//           width:60px;
-//           height:60px;
-//           margin:5px 10px;
-//         }
-//         img[lazy=loading]{
-//           background-color: #e6e6e6;
-//         }
-//         span{
-//           height:70px;
-//           display: inline-block;
-//           // vertical-align: top;
-//           line-height: 70px;
-//         }
-//         .music-index{
-//           width:30px;
-//           text-align: center;
-//         }
-//         .music-name{
-//           flex:7;
-//           overflow:hidden;
-//           padding-left: 10px;
-//           padding-right:10px;
-//           font-size: 18px;
-//           cursor:pointer;
-//           -webkit-tap-highlight-color: rgba(0,0,0,0);
-//             -webkit-tap-highlight-color: transparent;
-//         }
-//   }
-// }
+// 路由动画
+.isShowRouterLeft-enter-active,.isShowRouterRight-enter-active {
+  transition: all .5s linear;
+}
+.isShowRouterLeft-leave-active,.isShowRouterRight-leave-active {
+  transition: all .5s linear;
+}
+.isShowRouterLeft-enter,.isShowRouterRight-leave-active{
+  transform: translateX(100%);
+  // opacity: 0;
+}
+.isShowRouterLeft-leave-active,.isShowRouterRight-enter{
+  transform: translateX(-100%);
+  // opacity: 0;
+}
 </style>
