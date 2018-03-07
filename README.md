@@ -35,11 +35,11 @@
 
 ## 构建
 使用vue-cli脚手架构建工具搭建
-> npm install webpack -g
-> npm install vue-cli -g
-> vue init webpack vuetest（vuetest为项目名称）
-> cd vuetest
-> npm install
+>npm install webpack -g
+>npm install vue-cli -g
+>vue init webpack vuetest（vuetest为项目名称）
+>cd vuetest
+>npm install
 
 ## 开发中的问题
 1.vue2.0的官方推荐HTTP请求工具是axios，请求返回的数据是处理过的json数据，所以数据在`res.data`里
