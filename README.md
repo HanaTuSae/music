@@ -6,7 +6,7 @@
 [在线演示](http://music.hanatusae.xin/music2)(请使用chrome开发者手机演示模式预览)
 
 ### 移动端演示
-扫二维码在手机上查看效果更好
+扫二维码在手机上查看效果更好  
 ![](http://hanatusae.oss-cn-shenzhen.aliyuncs.com/music2.0.png)
 
 ### 预览图
