@@ -41,7 +41,7 @@
 > cd vuetest
 > npm install
 
-##开发中的问题
+## 开发中的问题
 1.vue2.0的官方推荐HTTP请求工具是axios，请求返回的数据是处理过的json数据，所以数据在`res.data`里
 
 2.vue提供了一个数据管理工具vuex，可以进行数据上的通信，例如不同组件间的数据处理
