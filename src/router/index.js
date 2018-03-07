@@ -10,7 +10,7 @@ Vue.use(Router)
 export default new Router({
   linkActiveClass: 'linkActive',
   mode: 'history',
-  base: __dirname,
+  base: '/music2/',//项目不在根目录时将__dirname改为目录地址
   routes: [
     // {
     //   path: '/',

@@ -17,6 +17,7 @@ import 'swiper/dist/css/swiper.min.css'
 
 Vue.config.productionTip = false
 Vue.use(VueAxios,axios);
+axios.defaults.baseURL='http://music.hanatusae.xin/music2';//当项目不是在根目录时设置基础路径
 Vue.use(Vuex);
 Vue.use(MintUI);
 Vue.use(VueAwesomeSwiper);

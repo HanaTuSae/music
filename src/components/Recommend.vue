@@ -81,7 +81,7 @@ export default {
             this.$router.push('/recommend/music');
           }else if(routerPath==='/recommend/radio'){
             this.$router.push('/recommend/video');
-          }else if(routerPath==='/recommend/music'){
+          }else if(routerPath==='/recommend/music'||routerPath==='/recommend'){
             this.$router.push('/musiclist');
           }
         }else if(Math.abs(X) > Math.abs(Y) && X < -100){//向左滑动
