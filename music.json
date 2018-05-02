@@ -1,0 +1,58 @@
+{
+  "musicData": [
+    {
+      "id":439915614,
+      "name": "李玉刚 - 刚好遇见你",
+      "src": "http://m10.music.126.net/20170625121351/3f28293b0bb9452011c4cdf39d02971a/ymusic/f623/5875/5fc2/c351e06b8d3b89b8cf113f407b41164b.mp3",
+      "musicImgSrc": "http://p4.music.126.net/lDyytkTaPYVTb1Vpide6AA==/18591642115187138.jpg"
+    },
+    {
+      "id":437250607,
+      "name": "以冬 - 我的一个道姑朋友",
+      "src": "http://m10.music.126.net/20170625121510/acba160cd5bab23b09123cff78b54d71/ymusic/97e2/1607/6348/9da8e4f4b35f7585e8ecae127f117ae0.mp3",
+      "musicImgSrc": "http://omratag7g.bkt.clouddn.com/%E6%B0%91%E8%B0%A3.jpg"
+    },
+    {
+      "id":437292675,
+      "name": "任素汐 - 我要你",
+      "src": "http://m10.music.126.net/20170625122134/3439d1fb6d888a8e08a7879bdbeba78c/ymusic/cda2/89aa/e245/a52627d677ac19b20ac98393377702e4.mp3",
+      "musicImgSrc": "http://omratag7g.bkt.clouddn.com/%E6%88%91%E8%A6%81%E4%BD%A0.jpg"
+    },
+    {
+      "id":436514312,
+      "name": "赵雷 - 成都",
+      "src":"http://m10.music.126.net/20170625122257/dab06bec6c7ef3ace1e7d51c08661e0d/ymusic/35e8/22de/2dcd/3d2ccb1bd197e23827a6953af6297eab.mp3",
+      "musicImgSrc": "http://p4.music.126.net/34YW1QtKxJ_3YnX9ZzKhzw==/2946691234868155.jpg"
+    },
+    {
+      "id":468020986,
+      "name": "韩安旭 - 多幸运",
+      "src":"http://m10.music.126.net/20170625122454/cba77990091ce9d24eee8899701afe99/ymusic/6e2f/1800/fc68/53f774ed1524c5754322635a45350efd.mp3",
+      "musicImgSrc": "http://p3.music.126.net/U9RoJy0AUsoYuaKjmJbAzQ==/3386495814257685.jpg"
+    },
+    {
+      "id":33248189,
+      "name": "李健 - 假如爱有天意",
+      "src": "http://m10.music.126.net/20170625122539/4ea0e5da086c4d496798564cfead12ba/ymusic/fed5/d503/0894/f77199f765f7d2dff2f7453d9cec7aa8.mp3",
+      "musicImgSrc": "http://omratag7g.bkt.clouddn.com/%E6%9D%8E%E5%81%A5.jpg"
+    },
+    {
+      "id":31445554,
+      "name": "Jam - 七月上",
+      "src": "http://m10.music.126.net/20170625122650/27c59b8091944ed72bc493efbcd39716/ymusic/4c8d/a7f3/76de/14ff6fd6083f9744ea5b99dfcd3559c2.mp3",
+      "musicImgSrc": "http://p3.music.126.net/9kZl6NRj3HxmQQ8DqTjZ4Q==/17729624997966923.jpg"
+    },
+    {
+      "id":34998961,
+      "name": "罗凯楠 - 咱们屯里人(粤语版)",
+      "src": "http://m10.music.126.net/20170625122818/a20304dba8efd4bae288d4e295ad1cfe/ymusic/ef96/de21/44b2/c0e13af19134323df688812f40c32231.mp3",
+      "musicImgSrc": "http://omratag7g.bkt.clouddn.com/%E5%A4%8F%E6%B4%9B%E7%89%B9%E7%83%A6%E6%81%BC.jpg"
+    },
+    {
+      "id":176165,
+      "name": "杨坤 - 那一天",
+      "src": "http://m10.music.126.net/20170625122929/433959a89b5030f4f5c3c356cf5b8f6f/ymusic/d65e/2c0f/0aaf/2193741ee9ac9032a9d7bd95f36c9455.mp3",
+      "musicImgSrc": "http://p1.music.126.net/r3vImYyyolimpv4I2vV0Qg==/37383395356459.jpg"
+    }
+  ]
+}
