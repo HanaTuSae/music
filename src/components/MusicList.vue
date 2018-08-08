@@ -72,7 +72,8 @@ export default {
         // 播放请求
         this.axios(config).then(function(response){
           if(_this.audio.index===index){// 超过2s点击判断是否为最后一次请求
-            var src=response.data.data[0].url;
+            // var src=response.data.data[0].url;
+            var src=response.data.musicUrl;
             _this.$store.commit('newaudio',{index:index,src:src});
             _this.$store.commit('play',true);
             _this.$store.commit('playImgSrc','stopImgSrc');

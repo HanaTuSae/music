@@ -274,7 +274,8 @@ export default {
           // 播放请求
           this.axios(config).then(function(response){
             if(_this.audio.index===currentIndex){// 超过2s点击判断是否为最后一次请求
-              var src=response.data.data[0].url;
+              // var src=response.data.data[0].url;
+              var src=response.data.musicUrl;
               _this.$store.commit('newaudio',{index:currentIndex,src:src});
               _this.$store.commit('play',true);
               _this.$store.commit('playImgSrc','stopImgSrc');
@@ -296,7 +297,8 @@ export default {
           // 播放请求
           this.axios(config).then(function(response){
             if(_this.audio.index===currentIndex){// 超过2s点击判断是否为最后一次请求
-              var src=response.data.data[0].url;
+              // var src=response.data.data[0].url;
+              var src=response.data.musicUrl;
               _this.$store.commit('delmusicData',currentIndex);
               _this.$store.commit('addmusicData',{id:musicID,name:musicname,src:src,musicImgSrc:musicImgSrc});
               _this.$store.commit('newaudio',{index:currentIndex,src:src});

@@ -187,15 +187,16 @@ apiRoutes.get('/find-music-suggest',function(req,res){
 // 搜索歌曲url
 apiRoutes.post('/play-music',function(req,res){
   var musicID=req.body.musicID;
-  //var musicUrl="http://music.163.com/api/song/detail/?id="+musicID+"&ids=%5B"+musicID+"%5D";
-  var br=128000 || req.body.br;
-  var data={
-    "ids":[musicID],
-    "br":br,
-    "csrf_token":""
-  };
-  var cookie = req.get('Cookie') ? req.get('Cookie') : (req.body.cookie ? req.body.cookie : '');
-  createWebAPIRequest('/weapi/song/enhance/player/url', data, cookie, res);
+  var musicUrl="http://music.163.com/song/media/outer/url?id="+musicID+".mp3";
+  res.json({musicUrl: musicUrl});
+  // var br=128000 || req.body.br;
+  // var data={
+  //   "ids":[musicID],
+  //   "br":br,
+  //   "csrf_token":""
+  // };
+  // var cookie = req.get('Cookie') ? req.get('Cookie') : (req.body.cookie ? req.body.cookie : '');
+  // createWebAPIRequest('/weapi/song/enhance/player/url', data, cookie, res);
 });
 
 //排行榜
