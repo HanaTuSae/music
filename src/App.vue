@@ -196,7 +196,8 @@ export default {
       this.$store.commit('newaudio',{index:index,src:''});
       this.axios(config).then(function(response){
         if(_this.audio.index===index){
-          var src=response.data.data[0].url;
+          // var src=response.data.data[0].url;
+          var src=response.data.musicUrl;
           _this.$store.commit('newaudio',{index:index,src:src});
         }
       }).catch(function(response){
